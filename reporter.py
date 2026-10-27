@@ -140,8 +140,28 @@ def build_diff(prev, curr):
     disk_used_change = curr["disk_used"] - prev["disk_used"]
     total_growth = sum(x["change"] for x in grew)
 
-    # 已解释比例：被识别出的增长 / 磁盘总增长
-    explained = total_growth / disk_used_change if disk_used_change > 0 else 0.0
+    # 已解释比例：能被识别库认出来的「去重」增长 / 磁盘总增长。
+    # 注意：grew 里父子目录会重复计数（例如 NetEase 和 NetEase\CloudMusic 同一次增长被算两遍），
+    # 直接拿 total_growth 当分子会超过 100%。这里只统计「顶层」目录（其祖先不在 grew 里），
+    # 才是和磁盘真实变化可比的口径。
+    grew_paths = {x["path"] for x in grew}
+    identified_top_growth = 0
+    for x in grew:
+        # 是否有祖先目录也在 grew 里？有则跳过（它的增长已被祖先计入）
+        parent = os.path.dirname(x["path"])
+        has_ancestor = False
+        while parent != os.path.dirname(parent):
+            if parent in grew_paths:
+                has_ancestor = True
+                break
+            parent = os.path.dirname(parent)
+        if has_ancestor:
+            continue
+        if x["software_name"] and x["software_name"] != "未识别文件夹":
+            identified_top_growth += x["change"]
+
+    # 已解释比例 = 顶层已识别目录的增长 / 磁盘总增长（0~1，可能因缓存清理等略超或为负，展示时再 clamp）
+    explained = identified_top_growth / disk_used_change if disk_used_change > 0 else 0.0
 
     # 新出现的软件（上次没有、这次有的软件条目）
     prev_sw = set()
@@ -381,7 +401,9 @@ def render_html(diff):
       <div class="stat"><div class="label" data-i18n="used_label">本次已用</div><div class="val">__USED__</div></div>
       <div class="stat"><div class="label" data-i18n="free_label">本次可用</div><div class="val">__FREE__</div></div>
       <div class="stat"><div class="label" data-i18n="change_label">空间变化</div><div class="val" style="color:#e74c3c">__CHANGE__</div></div>
+      <div class="stat"><div class="label" data-i18n="explained_label">已解释比例</div><div class="val">__EXPLAINED__</div></div>
     </div>
+    <div class="sub" data-i18n="explained_hint">已解释比例 =（顶层已识别目录的增长字节数 ÷ C 盘减少的字节数）×100%，按字节量算、父子目录去重，不是按条目个数算。越高说明识别库覆盖越好；偏低说明大部分增长来自「未识别文件夹」，建议扩充识别库。</div>
   </div>
 
   <div class="tabs">
@@ -617,12 +639,16 @@ document.getElementById('snapList').addEventListener('click', (e) => {
         {k: sorted(v) for k, v in config.DELETION_LEVELS.items()},
         ensure_ascii=False)
 
+    # 已解释比例：被识别出的增长 / 磁盘总增长（0~1，可能因舍入略超 1）
+    explained_txt = ("%d%%" % round(min(max(diff["explained_ratio"], 0.0), 1.0) * 100))
+
     html = (html
             .replace("__PREV__", diff["prev_time"])
             .replace("__CURR__", diff["curr_time"])
             .replace("__USED__", human_size(diff["curr_used"]))
             .replace("__FREE__", human_size(diff["curr_free"]))
             .replace("__CHANGE__", change_txt)
+            .replace("__EXPLAINED__", explained_txt)
             .replace("__ROWS__", rows_html)
             .replace("__SHRINK__", shrink_html)
             .replace("__DATA__", _history_data_block().replace("</", "<\\/"))

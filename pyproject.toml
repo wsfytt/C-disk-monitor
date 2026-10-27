@@ -1,0 +1,32 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "c-disk-monitor"
+version = "0.1.0"
+description = "A pure-Python Windows tool that scans the C drive, identifies space-hogging folders and gives deletion suggestions — scan, record and report only, never deletes."
+readme = "README.md"
+license = { text = "MIT" }
+requires-python = ">=3.8"
+authors = [{ name = "wsfytt" }]
+keywords = ["windows", "disk", "space", "cleanup", "monitor", "c-drive"]
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Operating System :: Microsoft :: Windows",
+    "Environment :: Console",
+    "Topic :: System :: Monitoring",
+    "License :: OSI Approved :: MIT License",
+]
+dependencies = []
+
+[project.scripts]
+cdm = "monitor:main"
+cdm-scan = "monitor:main"
+
+[tool.setuptools]
+# 纯脚本项目，无包；把运行所需的数据文件也一起打包
+py-modules = ["monitor", "scanner", "reporter", "overview", "compare", "config", "i18n", "utils", "install_task"]
+
+[tool.setuptools.package-data]
+"*" = ["software_db.json", "*.bat"]

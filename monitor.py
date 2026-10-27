@@ -20,7 +20,7 @@ import scanner
 import reporter
 import overview
 import i18n
-from utils import open_report
+from utils import open_report, setup_logging, log
 
 
 def T(k):
@@ -28,13 +28,12 @@ def T(k):
 
 
 def do_scan():
-    """执行一次扫描并保存快照，打印结果。"""
-    print("[%s] %s" % (datetime.datetime.now().strftime("%H:%M:%S"), T("start_scan")))
+    """执行一次扫描并保存快照，打印结果（同时写日志）。"""
+    log().info(T("start_scan"))
     snap = scanner.scan()
     path = scanner.save_snapshot(snap)
-    print("[%s] %s: %s" % (
-        datetime.datetime.now().strftime("%H:%M:%S"), T("scan_done"), path))
-    print("       %s %s / %s %s" % (
+    log().info("%s: %s" % (T("scan_done"), path))
+    log().info("%s %s / %s %s" % (
         T("used_free"), scanner.human_size(snap["disk_used"]),
         ("可用" if config.LANG == "zh" else "free"), scanner.human_size(snap["disk_free"])))
     return snap
@@ -91,6 +90,9 @@ def main():
     auto_open = "--open" in sys.argv
     report_only = "--report" in sys.argv
 
+    # 初始化日志（写到数据目录，常驻/计划任务出错也能留痕）
+    setup_logging(config.DATA_ROOT)
+
     # 「只查看历史对比」模式：不扫描，直接读已有快照生成报告页并打开。
     if report_only:
         snaps = scanner.load_snapshots()
@@ -98,46 +100,41 @@ def main():
             prev, curr = snaps[-2], snaps[-1]
             txt, html, diff = reporter.generate_report(prev, curr)
             open_report(html)
-            print(("已打开报告（含历史对比标签）：%s" if config.LANG == "zh" else "Opened report (with history tab): %s") % html)
+            log().info(("已打开报告（含历史对比标签）：%s" if config.LANG == "zh" else "Opened report (with history tab): %s") % html)
         else:
-            print(("快照不足 2 次，暂无历史对比可看。请先运行「立即扫描一次」。" if config.LANG == "zh"
-                   else "Less than 2 snapshots. Run a scan first."))
+            log().warning(("快照不足 2 次，暂无历史对比可看。" if config.LANG == "zh"
+                           else "Less than 2 snapshots, nothing to compare."))
         return
 
-    print("=" * 60)
-    print(T("banner_start"))
-    print("%s: %s" % (T("monitor_drive"), config.MONITOR_DRIVE))
-    print("%s: %s+" % (T("record_threshold"), scanner.human_size(config.MIN_DIR_SIZE_TO_RECORD)))
-    print("%s: %s" % (T("record_freq"), ("每天一次" if config.LANG == "zh" else "once a day")))
-    print("%s: %s" % (T("data_dir"), config.DATA_DIR))
-    print("%s: %s" % (T("report_dir"), config.REPORT_DIR))
-    print("=" * 60)
+    log().info(T("banner_start"))
+    log().info("%s: %s" % (T("monitor_drive"), config.MONITOR_DRIVE))
+    log().info("%s: %s+" % (T("record_threshold"), scanner.human_size(config.MIN_DIR_SIZE_TO_RECORD)))
+    log().info("%s: %s" % (T("record_freq"), ("每天一次" if config.LANG == "zh" else "once a day")))
+    log().info("%s: %s" % (T("data_dir"), config.DATA_DIR))
+    log().info("%s: %s" % (T("report_dir"), config.REPORT_DIR))
 
     if once:
         do_scan()
         maybe_report(auto_open=auto_open)
-        print(T("once_done"))
+        log().info(T("once_done"))
         return
 
     # 常驻模式
-    print("进入常驻监视模式（按 Ctrl+C 退出）。" if config.LANG == "zh" else "Entering monitor mode (Ctrl+C to quit).")
-    print("")
+    log().info("进入常驻监视模式（按 Ctrl+C 退出）。" if config.LANG == "zh" else "Entering monitor mode (Ctrl+C to quit).")
     while True:
         try:
             do_scan()
             maybe_report(auto_open=False)  # 后台定时不弹窗
-            print("")
-            print(("下次记录时间：%s（约 %s 小时后）" if config.LANG == "zh" else "Next record: %s (~%s hours later)") % (
+            log().info(("下次记录时间：%s（约 %s 小时后）" if config.LANG == "zh" else "Next record: %s (~%s hours later)") % (
                 (datetime.datetime.now() + datetime.timedelta(seconds=config.RECORD_INTERVAL_SECONDS)).strftime("%Y-%m-%d %H:%M:%S"),
                 config.RECORD_INTERVAL_SECONDS // 3600))
-            print("-" * 60)
             time.sleep(config.RECORD_INTERVAL_SECONDS)
         except KeyboardInterrupt:
-            print("\n收到退出信号，程序结束。" if config.LANG == "zh" else "\nExit signal received, stopping.")
+            log().info("收到退出信号，程序结束。" if config.LANG == "zh" else "Exit signal received, stopping.")
             break
         except Exception as e:
-            print(("出错：%s" if config.LANG == "zh" else "Error: %s") % e)
-            print("1 分钟后重试...")
+            log().exception(("出错：%s" if config.LANG == "zh" else "Error: %s") % e)
+            log().info("1 分钟后重试..." if config.LANG == "zh" else "Retrying in 1 minute...")
             time.sleep(60)
 
 

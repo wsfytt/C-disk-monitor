@@ -72,13 +72,38 @@ class TestBuildDiff(unittest.TestCase):
                 "disk_free": 1000 * MB - used, "disk_used": used, "dirs": dirs}
 
     def test_growth(self):
-        prev = self._snap(100 * MB, [{"path": r"C:\A", "name": "A", "size": 10 * MB}])
-        curr = self._snap(130 * MB, [{"path": r"C:\A", "name": "A", "size": 30 * MB}])
+        prev = self._snap(100 * MB, [{"path": r"C:\A", "name": "A", "size": 10 * MB,
+                                      "software_name": "A软件"}])
+        curr = self._snap(130 * MB, [{"path": r"C:\A", "name": "A", "size": 30 * MB,
+                                      "software_name": "A软件"}])
         diff = reporter.build_diff(prev, curr)
         self.assertEqual(diff["disk_used_change"], 30 * MB)
         self.assertEqual(len(diff["grew"]), 1)
         self.assertEqual(diff["grew"][0]["change"], 20 * MB)
+        # A 是已识别的顶层目录，已解释比例 = 20MB / 30MB
         self.assertAlmostEqual(diff["explained_ratio"], 20 / 30, places=3)
+
+    def test_explained_ratio_dedup(self):
+        # 父子目录重复计数：NetEase 和 NetEase\CloudMusic 是同一份增长，不能被算两遍
+        prev = self._snap(100 * MB, [
+            {"path": r"C:\NetEase", "name": "NetEase", "size": 10 * MB, "software_name": "网易软件目录"},
+            {"path": r"C:\NetEase\CloudMusic", "name": "CloudMusic", "size": 8 * MB, "software_name": "网易云音乐"},
+        ])
+        curr = self._snap(130 * MB, [
+            {"path": r"C:\NetEase", "name": "NetEase", "size": 30 * MB, "software_name": "网易软件目录"},
+            {"path": r"C:\NetEase\CloudMusic", "name": "CloudMusic", "size": 28 * MB, "software_name": "网易云音乐"},
+        ])
+        diff = reporter.build_diff(prev, curr)
+        # 顶层 NetEase 增长 20MB，子目录 CloudMusic 增长 20MB（被父目录覆盖），去重后只算一次
+        self.assertEqual(diff["total_growth"], 40 * MB)
+        self.assertAlmostEqual(diff["explained_ratio"], 20 / 30, places=3)
+
+    def test_explained_ratio_ignores_unrecognized(self):
+        # 未识别文件夹的增长不计入已解释比例分子
+        prev = self._snap(100 * MB, [{"path": r"C:\A", "name": "A", "size": 10 * MB}])
+        curr = self._snap(130 * MB, [{"path": r"C:\A", "name": "A", "size": 30 * MB}])
+        diff = reporter.build_diff(prev, curr)
+        self.assertEqual(diff["explained_ratio"], 0.0)
 
     def test_shrink_and_new(self):
         prev = self._snap(200 * MB, [{"path": r"C:\B", "name": "B", "size": 50 * MB}])
