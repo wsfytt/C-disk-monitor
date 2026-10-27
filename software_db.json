@@ -1,0 +1,1012 @@
+{
+  "software_db": {
+    "origin": {
+      "name": "Origin / EA 游戏平台",
+      "company": "EA (Electronic Arts)",
+      "tip": "游戏安装目录。若已不玩可卸载对应游戏，或通过 Origin 客户端设置把游戏安装到其他盘。",
+      "name_en": "Origin / EA game platform",
+      "tip_en": "Game install folder. Uninstall games you no longer play, or move installs to another drive via the Origin client."
+    },
+    "ea games": {
+      "name": "EA Games 游戏目录",
+      "company": "EA (Electronic Arts)",
+      "tip": "EA 游戏安装目录，单个游戏动辄几十 GB。不玩的游戏建议卸载或迁移到其他盘。",
+      "name_en": "EA Games folder",
+      "tip_en": "EA game install folder; a single game can be tens of GB. Uninstall or move games you no longer play."
+    },
+    "electronic arts": {
+      "name": "Electronic Arts 目录",
+      "company": "EA (Electronic Arts)",
+      "tip": "EA 相关程序目录。可清理旧版本或迁移游戏。",
+      "name_en": "Electronic Arts folder",
+      "tip_en": "EA program folder. You can clean old versions or move games."
+    },
+    "steam": {
+      "name": "Steam 平台",
+      "company": "Valve",
+      "tip": "Steam 游戏目录。库文件夹下每个 app 目录是游戏，可在 Steam 设置里把库迁移到其他盘。",
+      "name_en": "Steam",
+      "tip_en": "Steam game folder. Move the library to another drive in Steam settings."
+    },
+    "steamapps": {
+      "name": "Steam 游戏库",
+      "company": "Valve",
+      "tip": "Steam 已安装的游戏本体，是 C 盘大头。建议在 Steam → 设置 → 存储里把游戏迁移到其他盘。",
+      "name_en": "Steam game library",
+      "tip_en": "Installed Steam games, the biggest C-drive hog. Move games to another drive via Steam > Settings > Storage."
+    },
+    "epic games": {
+      "name": "Epic Games 平台",
+      "company": "Epic Games",
+      "tip": "Epic 游戏目录。不玩的游戏可卸载或迁移。",
+      "name_en": "Epic Games",
+      "tip_en": "Epic games folder. Uninstall or move games you no longer play."
+    },
+    "epicgames": {
+      "name": "Epic Games 平台",
+      "company": "Epic Games",
+      "tip": "Epic 游戏目录。不玩的游戏可卸载或迁移。",
+      "name_en": "Epic Games",
+      "tip_en": "Epic games folder. Uninstall or move games you no longer play."
+    },
+    "ubisoft": {
+      "name": "Ubisoft 平台",
+      "company": "Ubisoft",
+      "tip": "育碧游戏目录。不玩的游戏可卸载或迁移。",
+      "name_en": "Ubisoft",
+      "tip_en": "Ubisoft games folder. Uninstall or move games you no longer play."
+    },
+    "gog galaxy": {
+      "name": "GOG Galaxy 平台",
+      "company": "GOG",
+      "tip": "GOG 游戏目录。不玩的游戏可卸载。",
+      "name_en": "GOG Galaxy",
+      "tip_en": "GOG games folder. Uninstall games you no longer play."
+    },
+    "battle.net": {
+      "name": "Battle.net 暴雪平台",
+      "company": "Blizzard",
+      "tip": "暴雪游戏目录。不玩的游戏可卸载或迁移。",
+      "name_en": "Battle.net (Blizzard)",
+      "tip_en": "Blizzard games folder. Uninstall or move games you no longer play."
+    },
+    "riot games": {
+      "name": "Riot Games 拳头游戏",
+      "company": "Riot Games",
+      "tip": "英雄联盟/无畏契约等游戏目录。不玩的游戏可卸载。",
+      "name_en": "Riot Games",
+      "tip_en": "League of Legends / Valorant etc. Uninstall games you no longer play."
+    },
+    "wechat": {
+      "name": "微信",
+      "company": "腾讯",
+      "tip": "微信聊天记录、图片视频缓存是 C 盘大头。可在微信 → 设置 → 文件管理里改存储位置到其他盘，并定期清理缓存。",
+      "name_en": "WeChat",
+      "tip_en": "WeChat chat history, images and video cache are a big C-drive hog. Move storage to another drive via WeChat > Settings > File Management and clear cache regularly."
+    },
+    "xwechat": {
+      "name": "微信(新版)",
+      "company": "腾讯",
+      "tip": "新版微信数据目录，聊天记录和缓存。可在微信设置里改存储位置、清理缓存。",
+      "name_en": "WeChat (new)",
+      "tip_en": "New WeChat data folder: chat history and cache. Move storage / clear cache in WeChat settings."
+    },
+    "wechat files": {
+      "name": "微信文件",
+      "company": "腾讯",
+      "tip": "微信接收的文件、图片、视频。建议定期清理或迁移存储位置。",
+      "name_en": "WeChat Files",
+      "tip_en": "Files, images and videos received in WeChat. Clean up or move the storage location."
+    },
+    "qqmusic": {
+      "name": "QQ音乐",
+      "company": "腾讯",
+      "tip": "QQ音乐缓存和下载的歌曲，可在设置里清理缓存或改下载目录。",
+      "name_en": "QQ Music",
+      "tip_en": "QQ Music cache and downloaded songs. Clear cache or change download folder in settings."
+    },
+    "qqlive": {
+      "name": "腾讯视频",
+      "company": "腾讯",
+      "tip": "腾讯视频缓存和下载的视频，可在设置里清理。",
+      "name_en": "Tencent Video",
+      "tip_en": "Tencent Video cache and downloaded videos. Clear in settings."
+    },
+    "qqpcmgr": {
+      "name": "腾讯电脑管家",
+      "company": "腾讯",
+      "tip": "电脑管家缓存，可在软件里清理垃圾。",
+      "name_en": "Tencent PC Manager",
+      "tip_en": "PC Manager cache. Clean junk files inside the app."
+    },
+    "wegame": {
+      "name": "WeGame 游戏平台",
+      "company": "腾讯",
+      "tip": "WeGame 游戏下载和缓存，不玩的游戏可卸载或迁移。",
+      "name_en": "WeGame",
+      "tip_en": "WeGame game downloads and cache. Uninstall or move games you no longer play."
+    },
+    "wemeet": {
+      "name": "腾讯会议",
+      "company": "腾讯",
+      "tip": "腾讯会议缓存和录制文件，可在设置里清理。",
+      "name_en": "Tencent Meeting (WeMeet)",
+      "tip_en": "Tencent Meeting cache and recordings. Clear in settings."
+    },
+    "qqguild": {
+      "name": "QQ频道",
+      "company": "腾讯",
+      "tip": "QQ频道缓存，可清理。",
+      "name_en": "QQ Guild",
+      "tip_en": "QQ Guild cache. Safe to clean."
+    },
+    "txgameassistant": {
+      "name": "腾讯手游助手",
+      "company": "腾讯",
+      "tip": "腾讯手游助手(模拟器)的游戏和缓存，不玩的游戏可删除。",
+      "name_en": "Tencent Gaming Buddy",
+      "tip_en": "Tencent mobile-game emulator games and cache. Delete games you no longer play."
+    },
+    "mobilegamepc": {
+      "name": "腾讯手游助手",
+      "company": "腾讯",
+      "tip": "腾讯手游助手(模拟器)的游戏和缓存，不玩的游戏可删除。",
+      "name_en": "Tencent Gaming Buddy",
+      "tip_en": "Tencent mobile-game emulator games and cache. Delete games you no longer play."
+    },
+    "androws": {
+      "name": "腾讯应用宝(安卓模拟器)",
+      "company": "腾讯",
+      "tip": "应用宝安卓模拟器，占用很大。不用的话可卸载。",
+      "name_en": "Tencent App Store (Android emulator)",
+      "tip_en": "Android emulator, very large. Uninstall if unused."
+    },
+    "weixin": {
+      "name": "微信",
+      "company": "腾讯",
+      "tip": "微信缓存目录。建议在微信设置里迁移文件存储位置到其他盘。",
+      "name_en": "WeChat",
+      "tip_en": "WeChat chat history, images and video cache are a big C-drive hog. Move storage to another drive via WeChat > Settings > File Management and clear cache regularly."
+    },
+    "tencent": {
+      "name": "腾讯系软件目录",
+      "company": "腾讯",
+      "tip": "QQ、微信、腾讯会议等腾讯软件的缓存和文件。",
+      "name_en": "Tencent software folder",
+      "tip_en": "Cache and files from Tencent apps (QQ, WeChat, WeMeet, etc.)."
+    },
+    "qq": {
+      "name": "QQ",
+      "company": "腾讯",
+      "tip": "QQ 聊天记录和缓存。可在 QQ 设置里清理缓存或迁移到其他盘。",
+      "name_en": "QQ",
+      "tip_en": "QQ chat history and cache. Clear cache or move to another drive in QQ settings."
+    },
+    "qq_guild": {
+      "name": "QQ频道",
+      "company": "腾讯",
+      "tip": "QQ频道缓存，可清理。",
+      "name_en": "QQ Guild",
+      "tip_en": "QQ Guild cache. Safe to clean."
+    },
+    "qqnt": {
+      "name": "QQ(NT版)",
+      "company": "腾讯",
+      "tip": "新版 QQ 数据，聊天记录和缓存。",
+      "name_en": "QQ (NT)",
+      "tip_en": "New QQ data: chat history and cache."
+    },
+    "qqbrowser": {
+      "name": "QQ 浏览器",
+      "company": "腾讯",
+      "tip": "浏览器缓存目录，可清理。",
+      "name_en": "QQ Browser",
+      "tip_en": "Browser cache. Safe to clean."
+    },
+    "dingtalk": {
+      "name": "钉钉",
+      "company": "阿里巴巴",
+      "tip": "钉钉接收的文件和缓存。可清理或迁移。",
+      "name_en": "DingTalk",
+      "tip_en": "Files and cache received in DingTalk. Clean or move."
+    },
+    "dingtalklocal": {
+      "name": "钉钉文件",
+      "company": "阿里巴巴",
+      "tip": "钉钉本地文件目录。可清理或迁移。",
+      "name_en": "DingTalk Files",
+      "tip_en": "DingTalk local files. Clean or move."
+    },
+    "jianyingpro": {
+      "name": "剪映专业版",
+      "company": "字节跳动",
+      "tip": "剪映的视频草稿和缓存，占用很大。可在剪映里清理草稿和缓存。",
+      "name_en": "Jianying Pro (CapCut)",
+      "tip_en": "Jianying video drafts and cache, very large. Clear drafts and cache inside the app."
+    },
+    "jianying": {
+      "name": "剪映",
+      "company": "字节跳动",
+      "tip": "剪映草稿和缓存，可清理。",
+      "name_en": "Jianying (CapCut)",
+      "tip_en": "Jianying drafts and cache. Safe to clean."
+    },
+    "tdappdesktop": {
+      "name": "腾讯会议",
+      "company": "腾讯",
+      "tip": "腾讯会议缓存和记录，可清理。",
+      "name_en": "Tencent Meeting (WeMeet)",
+      "tip_en": "Tencent Meeting cache and recordings. Clear in settings."
+    },
+    "nvidia": {
+      "name": "NVIDIA 显卡缓存",
+      "company": "NVIDIA",
+      "tip": "显卡着色器缓存（DXCache/ComputeCache），可安全清理，游戏会重新生成。",
+      "name_en": "NVIDIA shader cache",
+      "tip_en": "GPU shader cache (DXCache/ComputeCache). Safe to clear; games regenerate it."
+    },
+    "package cache": {
+      "name": "安装包缓存(Package Cache)",
+      "company": "Microsoft",
+      "tip": "Visual Studio 等安装程序的缓存，可在磁盘清理或 VS Installer 里清理旧版本。",
+      "name_en": "Installer cache (Package Cache)",
+      "tip_en": "Visual Studio installer cache. Clear old versions in Disk Cleanup or VS Installer."
+    },
+    "dotnet": {
+      "name": ".NET 运行时",
+      "company": "Microsoft",
+      "tip": ".NET 运行时库，被多个程序依赖，一般不建议手动删。",
+      "name_en": ".NET Runtime",
+      "tip_en": "Runtime libraries used by many programs. Not recommended to delete manually."
+    },
+    "common files": {
+      "name": "公共文件目录",
+      "company": "Microsoft",
+      "tip": "多个软件共用的库文件，一般不建议手动删。",
+      "name_en": "Common Files",
+      "tip_en": "Shared libraries used by many apps. Not recommended to delete manually."
+    },
+    "chrome": {
+      "name": "Google Chrome 浏览器",
+      "company": "Google",
+      "tip": "浏览器缓存和用户数据。可在浏览器设置里清理缓存，或定期清理。",
+      "name_en": "Google Chrome",
+      "tip_en": "Browser cache and user data. Clear cache in browser settings."
+    },
+    "google": {
+      "name": "Google 目录",
+      "company": "Google",
+      "tip": "Chrome 等 Google 软件数据。",
+      "name_en": "Google folder",
+      "tip_en": "Data for Chrome and other Google software."
+    },
+    "mozilla": {
+      "name": "Firefox 浏览器",
+      "company": "Mozilla",
+      "tip": "浏览器缓存和用户数据，可清理。",
+      "name_en": "Firefox",
+      "tip_en": "Browser cache and user data. Safe to clean."
+    },
+    "edge": {
+      "name": "Edge 浏览器",
+      "company": "Microsoft",
+      "tip": "Edge 浏览器缓存和用户数据。",
+      "name_en": "Edge browser",
+      "tip_en": "Edge browser cache and user data."
+    },
+    "adobe": {
+      "name": "Adobe 系列软件",
+      "company": "Adobe",
+      "tip": "PS、PR、AE 等 Adobe 软件。缓存（Media Cache）经常暴涨，可在软件里清理缓存。",
+      "name_en": "Adobe software",
+      "tip_en": "Adobe apps (PS/PR/AE). Media Cache often balloons; clear it inside the app."
+    },
+    "autodesk": {
+      "name": "Autodesk 软件",
+      "company": "Autodesk",
+      "tip": "AutoCAD 等 Autodesk 软件缓存，可清理。",
+      "name_en": "Autodesk software",
+      "tip_en": "AutoCAD etc. cache. Safe to clean."
+    },
+    "matlab": {
+      "name": "MATLAB",
+      "company": "MathWorks",
+      "tip": "MATLAB 安装目录较大，若不再使用可卸载。",
+      "name_en": "MATLAB",
+      "tip_en": "Large MATLAB install. Uninstall if no longer used."
+    },
+    "ansys": {
+      "name": "ANSYS",
+      "company": "ANSYS",
+      "tip": "ANSYS 仿真软件安装目录很大，若不用可卸载。",
+      "name_en": "ANSYS",
+      "tip_en": "Very large ANSYS install. Uninstall if unused."
+    },
+    "microsoft office": {
+      "name": "Microsoft Office",
+      "company": "Microsoft",
+      "tip": "Office 安装目录，一般不建议删（系统办公必需）。",
+      "name_en": "Microsoft Office",
+      "tip_en": "Office install folder. Not recommended to delete (needed for office work)."
+    },
+    "wps": {
+      "name": "WPS Office",
+      "company": "金山",
+      "tip": "WPS 缓存和安装目录。",
+      "name_en": "WPS Office",
+      "tip_en": "WPS cache and install folder."
+    },
+    "android studio": {
+      "name": "Android Studio",
+      "company": "Google",
+      "tip": "Android 开发环境。SDK、模拟器镜像很大，可清理不用的模拟器和 SDK。",
+      "name_en": "Android Studio",
+      "tip_en": "Android dev environment. SDK and emulator images are large; clean unused ones."
+    },
+    "android": {
+      "name": "Android SDK",
+      "company": "Google",
+      "tip": "Android 开发 SDK 和模拟器，占用很大。可清理不用的系统镜像。",
+      "name_en": "Android SDK",
+      "tip_en": "Android SDK and emulators, very large. Clean unused system images."
+    },
+    "visual studio": {
+      "name": "Visual Studio",
+      "company": "Microsoft",
+      "tip": "Visual Studio 安装目录很大，若不用可卸载。",
+      "name_en": "Visual Studio",
+      "tip_en": "Large VS install. Uninstall if unused."
+    },
+    "node_modules": {
+      "name": "node_modules 依赖",
+      "company": "Node.js 项目",
+      "tip": "JS 项目依赖目录，单个项目可清理 node_modules 重新安装。",
+      "name_en": "node_modules",
+      "tip_en": "JS project dependencies. You can delete node_modules and reinstall per project."
+    },
+    "pycharm": {
+      "name": "PyCharm",
+      "company": "JetBrains",
+      "tip": "PyCharm 缓存和索引，可在 IDE 里清理缓存。",
+      "name_en": "PyCharm",
+      "tip_en": "PyCharm cache and indexes. Clear cache inside the IDE."
+    },
+    "intellij": {
+      "name": "IntelliJ IDEA",
+      "company": "JetBrains",
+      "tip": "IDEA 缓存和索引，可在 IDE 里清理。",
+      "name_en": "IntelliJ IDEA",
+      "tip_en": "IDEA cache and indexes. Clear inside the IDE."
+    },
+    "npm": {
+      "name": "npm 缓存",
+      "company": "Node.js",
+      "tip": "npm 全局缓存，可运行 npm cache clean --force 清理。",
+      "name_en": "npm cache",
+      "tip_en": "npm global cache. Run npm cache clean --force."
+    },
+    "pip": {
+      "name": "pip 缓存",
+      "company": "Python",
+      "tip": "pip 下载缓存，可运行 pip cache purge 清理。",
+      "name_en": "pip cache",
+      "tip_en": "pip download cache. Run pip cache purge."
+    },
+    "baidunetdisk": {
+      "name": "百度网盘",
+      "company": "百度",
+      "tip": "百度网盘下载目录和缓存。",
+      "name_en": "Baidu Netdisk",
+      "tip_en": "Baidu Netdisk download folder and cache."
+    },
+    "onedrive": {
+      "name": "OneDrive",
+      "company": "Microsoft",
+      "tip": "OneDrive 同步文件，可把不常用文件设为仅在线。",
+      "name_en": "OneDrive",
+      "tip_en": "OneDrive synced files. Set rarely-used files to online-only."
+    },
+    "windows.old": {
+      "name": "Windows.old 旧系统",
+      "company": "Microsoft",
+      "tip": "系统升级后残留的旧系统文件，确认新系统稳定后可用磁盘清理工具删除，通常能释放几十 GB。",
+      "name_en": "Windows.old",
+      "tip_en": "Old system files left after an upgrade. Delete via Disk Cleanup once the new system is stable (often frees tens of GB)."
+    },
+    "temp": {
+      "name": "临时文件目录",
+      "company": "系统",
+      "tip": "临时文件，可安全清理（用磁盘清理或直接清空 Temp）。",
+      "name_en": "Temp files",
+      "tip_en": "Temporary files. Safe to clear (Disk Cleanup or empty Temp)."
+    },
+    "tmp": {
+      "name": "临时文件目录",
+      "company": "系统",
+      "tip": "临时文件，可安全清理。",
+      "name_en": "Temp files",
+      "tip_en": "Temporary files. Safe to clear (Disk Cleanup or empty Temp)."
+    },
+    "downloads": {
+      "name": "下载目录",
+      "company": "系统",
+      "tip": "下载文件夹，长期积累的安装包、视频等，按需清理。",
+      "name_en": "Downloads",
+      "tip_en": "Downloads folder. Clean up accumulated installers and videos as needed."
+    },
+    "cache": {
+      "name": "缓存目录",
+      "company": "系统/软件",
+      "tip": "各类软件缓存，可清理。",
+      "name_en": "Cache",
+      "tip_en": "Cache from various software. Safe to clean."
+    },
+    "installer": {
+      "name": "安装包缓存",
+      "company": "Microsoft",
+      "tip": "安装程序缓存（C:\\Windows\\Installer），不建议手动删，避免软件无法卸载。",
+      "name_en": "Installer cache",
+      "tip_en": "Installer cache (C:////Windows////Installer). Not recommended to delete manually, to avoid breaking uninstall."
+    },
+    "hiberfil.sys": {
+      "name": "休眠文件",
+      "company": "系统",
+      "tip": "休眠功能占用（通常等于内存大小）。若不用休眠，可关闭以释放空间。",
+      "name_en": "Hibernation file",
+      "tip_en": "Hibernation file (usually ~RAM size). Disable hibernation to free space if unused."
+    },
+    "pagefile.sys": {
+      "name": "页面文件",
+      "company": "系统",
+      "tip": "虚拟内存页面文件，一般不建议动，可调小或移到其他盘。",
+      "name_en": "Page file",
+      "tip_en": "Virtual memory page file. Not recommended to touch; can shrink or move to another drive."
+    },
+    "microsoft games": {
+      "name": "Microsoft 游戏目录",
+      "company": "Microsoft",
+      "tip": "微软商店游戏，可在设置→应用里卸载不玩的游戏。",
+      "name_en": "Microsoft games",
+      "tip_en": "Microsoft Store games. Uninstall unused games in Settings > Apps."
+    },
+    "blizzard": {
+      "name": "暴雪游戏目录",
+      "company": "Blizzard",
+      "tip": "暴雪战网游戏本体，不玩的游戏可卸载。",
+      "name_en": "Blizzard games",
+      "tip_en": "Blizzard/Battle.net game installs. Uninstall games you no longer play."
+    },
+    "minecraft": {
+      "name": "Minecraft",
+      "company": "Mojang / Microsoft",
+      "tip": "我的世界游戏本体和存档，存档较小，游戏本体可卸载或迁移。",
+      "name_en": "Minecraft",
+      "tip_en": "Game files and saves. Saves are small; uninstall or move the game itself."
+    },
+    "rockstar games": {
+      "name": "Rockstar Games",
+      "company": "Rockstar Games",
+      "tip": "GTA、荒野大镖客等游戏目录，单个体积很大，不玩可卸载。",
+      "name_en": "Rockstar Games",
+      "tip_en": "GTA / Red Dead etc., very large. Uninstall if not playing."
+    },
+    "genshin impact": {
+      "name": "原神",
+      "company": "米哈游",
+      "tip": "原神游戏本体，几十 GB，不玩可卸载或迁移。",
+      "name_en": "Genshin Impact",
+      "tip_en": "Game files, tens of GB. Uninstall or move if not playing."
+    },
+    "star rail": {
+      "name": "崩坏：星穹铁道",
+      "company": "米哈游",
+      "tip": "星穹铁道游戏本体，不玩可卸载或迁移。",
+      "name_en": "Honkai: Star Rail",
+      "tip_en": "Game files. Uninstall or move if not playing."
+    },
+    "zenlesszonezero": {
+      "name": "绝区零",
+      "company": "米哈游",
+      "tip": "绝区零游戏本体，不玩可卸载或迁移。",
+      "name_en": "Zenless Zone Zero",
+      "tip_en": "Game files. Uninstall or move if not playing."
+    },
+    "honkai": {
+      "name": "崩坏系列游戏",
+      "company": "米哈游",
+      "tip": "崩坏系列游戏本体，不玩可卸载或迁移。",
+      "name_en": "Honkai series",
+      "tip_en": "Honkai game files. Uninstall or move if not playing."
+    },
+    "wuthering waves": {
+      "name": "鸣潮",
+      "company": "库洛游戏",
+      "tip": "鸣潮游戏本体，不玩可卸载或迁移。",
+      "name_en": "Wuthering Waves",
+      "tip_en": "Game files. Uninstall or move if not playing."
+    },
+    "crossfire": {
+      "name": "穿越火线",
+      "company": "腾讯",
+      "tip": "穿越火线游戏本体，不玩可卸载。",
+      "name_en": "CrossFire",
+      "tip_en": "Game files. Uninstall if not playing."
+    },
+    "lethal company": {
+      "name": "Lethal Company",
+      "company": "Zeekerss",
+      "tip": "游戏本体，体积不大，不玩可卸载。",
+      "name_en": "Lethal Company",
+      "tip_en": "Game files, small. Uninstall if not playing."
+    },
+    "qq_news": {
+      "name": "腾讯新闻",
+      "company": "腾讯",
+      "tip": "腾讯新闻缓存，可清理。",
+      "name_en": "Tencent News",
+      "tip_en": "Tencent News cache. Safe to clean."
+    },
+    "weiyun": {
+      "name": "腾讯微云",
+      "company": "腾讯",
+      "tip": "腾讯微云同步文件和缓存。",
+      "name_en": "Tencent Weiyun",
+      "tip_en": "Tencent Weiyun synced files and cache."
+    },
+    "tencent files": {
+      "name": "腾讯文件目录",
+      "company": "腾讯",
+      "tip": "腾讯系软件接收的文件和缓存，按需清理。",
+      "name_en": "Tencent Files",
+      "tip_en": "Files and cache received by Tencent apps. Clean as needed."
+    },
+    "feishu": {
+      "name": "飞书",
+      "company": "字节跳动",
+      "tip": "飞书接收的文件和缓存，可在设置里清理。",
+      "name_en": "Feishu",
+      "tip_en": "Files and cache received in Feishu. Clear in settings."
+    },
+    "lark": {
+      "name": "飞书(Lark)",
+      "company": "字节跳动",
+      "tip": "飞书海外版缓存和文件，可清理。",
+      "name_en": "Feishu (Lark)",
+      "tip_en": "Lark (overseas Feishu) cache and files. Safe to clean."
+    },
+    "aliyunpan": {
+      "name": "阿里云盘",
+      "company": "阿里巴巴",
+      "tip": "阿里云盘本地缓存和下载文件，按需清理。",
+      "name_en": "Aliyun Drive",
+      "tip_en": "Aliyun Drive local cache and downloads. Clean as needed."
+    },
+    "quark": {
+      "name": "夸克浏览器",
+      "company": "阿里巴巴",
+      "tip": "夸克浏览器缓存和下载，可清理。",
+      "name_en": "Quark browser",
+      "tip_en": "Quark browser cache and downloads. Safe to clean."
+    },
+    "xunlei": {
+      "name": "迅雷",
+      "company": "迅雷",
+      "tip": "迅雷下载目录和缓存，长期积累的下载文件可清理。",
+      "name_en": "Thunder (Xunlei)",
+      "tip_en": "Thunder downloads and cache. Clean accumulated downloads."
+    },
+    "thunder": {
+      "name": "迅雷",
+      "company": "迅雷",
+      "tip": "迅雷下载目录和缓存。",
+      "name_en": "Thunder (Xunlei)",
+      "tip_en": "Thunder downloads and cache. Clean accumulated downloads."
+    },
+    "cloudmusic": {
+      "name": "网易云音乐",
+      "company": "网易",
+      "tip": "网易云音乐缓存和下载的歌曲，可清理。",
+      "name_en": "NetEase Cloud Music",
+      "tip_en": "Cache and downloaded songs. Safe to clean."
+    },
+    "netease": {
+      "name": "网易软件目录",
+      "company": "网易",
+      "tip": "网易云音乐等网易软件缓存。",
+      "name_en": "NetEase software",
+      "tip_en": "Cache from NetEase apps (Cloud Music etc.)."
+    },
+    "youku": {
+      "name": "优酷",
+      "company": "阿里巴巴",
+      "tip": "优酷视频缓存和下载，可清理。",
+      "name_en": "Youku",
+      "tip_en": "Youku video cache and downloads. Safe to clean."
+    },
+    "iqiyi": {
+      "name": "爱奇艺",
+      "company": "爱奇艺",
+      "tip": "爱奇艺视频缓存和下载，可清理。",
+      "name_en": "iQiyi",
+      "tip_en": "iQiyi video cache and downloads. Safe to clean."
+    },
+    "mgtv": {
+      "name": "芒果TV",
+      "company": "芒果TV",
+      "tip": "芒果TV缓存和下载，可清理。",
+      "name_en": "Mango TV",
+      "tip_en": "Mango TV cache and downloads. Safe to clean."
+    },
+    "bilibili": {
+      "name": "哔哩哔哩",
+      "company": "哔哩哔哩",
+      "tip": "B站客户端缓存和下载的视频，可清理。",
+      "name_en": "Bilibili",
+      "tip_en": "Bilibili client cache and downloaded videos. Safe to clean."
+    },
+    "sogou": {
+      "name": "搜狗",
+      "company": "搜狗",
+      "tip": "搜狗输入法/浏览器等软件缓存，可清理。",
+      "name_en": "Sogou",
+      "tip_en": "Sogou input/browser cache. Safe to clean."
+    },
+    "360": {
+      "name": "360 软件",
+      "company": "360",
+      "tip": "360 安全卫士等软件的缓存和下载，可在软件里清理。",
+      "name_en": "360 software",
+      "tip_en": "360 Security Guard etc. cache and downloads. Clean inside the app."
+    },
+    "kingsoft": {
+      "name": "金山软件",
+      "company": "金山",
+      "tip": "金山毒霸/WPS 等金山软件目录。",
+      "name_en": "Kingsoft software",
+      "tip_en": "Kingsoft (Dubax/WPS) folders."
+    },
+    "huawei": {
+      "name": "华为软件",
+      "company": "华为",
+      "tip": "华为电脑管家/多屏协同等软件数据。",
+      "name_en": "Huawei software",
+      "tip_en": "Huawei PC Manager / Multi-screen etc. data."
+    },
+    "oppo": {
+      "name": "OPPO 软件",
+      "company": "OPPO",
+      "tip": "OPPO 相关软件数据。",
+      "name_en": "OPPO software",
+      "tip_en": "OPPO related software data."
+    },
+    "vivo": {
+      "name": "vivo 软件",
+      "company": "vivo",
+      "tip": "vivo 相关软件数据。",
+      "name_en": "vivo software",
+      "tip_en": "vivo related software data."
+    },
+    "xiaomi": {
+      "name": "小米软件",
+      "company": "小米",
+      "tip": "小米相关软件数据。",
+      "name_en": "Xiaomi software",
+      "tip_en": "Xiaomi related software data."
+    },
+    "sunlogin": {
+      "name": "向日葵远程",
+      "company": "贝锐",
+      "tip": "向日葵远程控制软件，不用可卸载。",
+      "name_en": "Sunlogin remote",
+      "tip_en": "Sunlogin remote-control software. Uninstall if unused."
+    },
+    "todesk": {
+      "name": "ToDesk 远程",
+      "company": "ToDesk",
+      "tip": "ToDesk 远程控制软件，不用可卸载。",
+      "name_en": "ToDesk remote",
+      "tip_en": "ToDesk remote-control software. Uninstall if unused."
+    },
+    "logitech": {
+      "name": "罗技外设",
+      "company": "罗技",
+      "tip": "罗技鼠标键盘驱动和 G HUB 软件，不用可卸载。",
+      "name_en": "Logitech peripherals",
+      "tip_en": "Logitech mouse/keyboard drivers and G HUB. Uninstall if unused."
+    },
+    "razer": {
+      "name": "雷蛇外设",
+      "company": "雷蛇",
+      "tip": "雷蛇外设驱动和 Synapse 软件，不用可卸载。",
+      "name_en": "Razer peripherals",
+      "tip_en": "Razer drivers and Synapse. Uninstall if unused."
+    },
+    "steelseries": {
+      "name": "赛睿外设",
+      "company": "赛睿",
+      "tip": "赛睿外设驱动软件，不用可卸载。",
+      "name_en": "SteelSeries peripherals",
+      "tip_en": "SteelSeries driver software. Uninstall if unused."
+    },
+    "docker": {
+      "name": "Docker",
+      "company": "Docker",
+      "tip": "Docker 镜像和容器，占用很大，可用 docker system prune 清理。",
+      "name_en": "Docker",
+      "tip_en": "Docker images and containers, very large. Run docker system prune to clean."
+    },
+    "vmware": {
+      "name": "VMware",
+      "company": "VMware",
+      "tip": "虚拟机软件和虚拟磁盘文件，虚拟磁盘很大，不用的虚拟机可删除。",
+      "name_en": "VMware",
+      "tip_en": "VM software and virtual disk files (very large). Delete unused VMs."
+    },
+    "virtualbox": {
+      "name": "VirtualBox",
+      "company": "Oracle",
+      "tip": "虚拟机软件和虚拟磁盘，不用的虚拟机可删除。",
+      "name_en": "VirtualBox",
+      "tip_en": "VM software and virtual disks. Delete unused VMs."
+    },
+    "vscode": {
+      "name": "VS Code",
+      "company": "Microsoft",
+      "tip": "VS Code 扩展和缓存，可清理不用的扩展。",
+      "name_en": "VS Code",
+      "tip_en": "VS Code extensions and cache. Remove unused extensions."
+    },
+    "visual studio code": {
+      "name": "VS Code",
+      "company": "Microsoft",
+      "tip": "VS Code 扩展和缓存，可清理不用的扩展。",
+      "name_en": "VS Code",
+      "tip_en": "VS Code extensions and cache. Remove unused extensions."
+    },
+    "eclipse": {
+      "name": "Eclipse",
+      "company": "Eclipse",
+      "tip": "Eclipse IDE 及工作区，不用可卸载。",
+      "name_en": "Eclipse",
+      "tip_en": "Eclipse IDE and workspace. Uninstall if unused."
+    },
+    "git": {
+      "name": "Git",
+      "company": "Git",
+      "tip": "Git 安装目录，一般不大，不建议手动删。",
+      "name_en": "Git",
+      "tip_en": "Git install folder, usually small. Not recommended to delete manually."
+    },
+    "anaconda": {
+      "name": "Anaconda",
+      "company": "Anaconda",
+      "tip": "Python 发行版，环境包很多，可用 conda clean 清理缓存。",
+      "name_en": "Anaconda",
+      "tip_en": "Python distribution with many envs. Run conda clean to clear cache."
+    },
+    "miniconda": {
+      "name": "Miniconda",
+      "company": "Anaconda",
+      "tip": "Miniconda 环境，可 conda clean 清理缓存。",
+      "name_en": "Miniconda",
+      "tip_en": "Miniconda environments. Run conda clean to clear cache."
+    },
+    "gradle": {
+      "name": "Gradle 缓存",
+      "company": "Gradle",
+      "tip": "Gradle 构建缓存，可清理 ~/.gradle/caches。",
+      "name_en": "Gradle cache",
+      "tip_en": "Gradle build cache. Clean ~/.gradle/caches."
+    },
+    "maven": {
+      "name": "Maven 仓库",
+      "company": "Apache",
+      "tip": "Maven 依赖仓库，长期积累很大，可清理不用的依赖。",
+      "name_en": "Maven repository",
+      "tip_en": "Maven dependency repo, grows over time. Clean unused dependencies."
+    },
+    "cargo": {
+      "name": "Cargo 缓存",
+      "company": "Rust",
+      "tip": "Rust 依赖缓存，可 cargo clean 清理。",
+      "name_en": "Cargo cache",
+      "tip_en": "Rust dependency cache. Run cargo clean."
+    },
+    "go": {
+      "name": "Go 模块缓存",
+      "company": "Google",
+      "tip": "Go 模块缓存，可 go clean -modcache 清理。",
+      "name_en": "Go module cache",
+      "tip_en": "Go module cache. Run go clean -modcache."
+    },
+    "system32": {
+      "name": "系统核心目录",
+      "company": "系统",
+      "tip": "Windows 系统目录，绝对不能手动删。",
+      "name_en": "System core folder",
+      "tip_en": "Windows system folder. Never delete manually."
+    },
+    "driverstore": {
+      "name": "驱动仓库",
+      "company": "系统",
+      "tip": "系统驱动备份仓库，占用可能很大，建议用磁盘清理工具处理。",
+      "name_en": "Driver store",
+      "tip_en": "System driver backup store, can be large. Use Disk Cleanup to handle."
+    },
+    "delivery optimization": {
+      "name": "传递优化缓存",
+      "company": "Microsoft",
+      "tip": "Windows 更新共享缓存，可在设置→存储里清理。",
+      "name_en": "Delivery Optimization cache",
+      "tip_en": "Windows Update shared cache. Clean in Settings > Storage."
+    },
+    "software distribution": {
+      "name": "Windows 更新缓存",
+      "company": "Microsoft",
+      "tip": "Windows 更新下载缓存，可在磁盘清理里清理。",
+      "name_en": "Windows Update cache",
+      "tip_en": "Windows Update download cache. Clean in Disk Cleanup."
+    },
+    "winreagent": {
+      "name": "系统恢复环境",
+      "company": "系统",
+      "tip": "Windows 恢复环境，一般不建议动。",
+      "name_en": "Recovery environment",
+      "tip_en": "Windows recovery environment. Not recommended to touch."
+    },
+    "recycler": {
+      "name": "回收站",
+      "company": "系统",
+      "tip": "回收站里的文件，清空回收站即可释放空间。",
+      "name_en": "Recycle Bin",
+      "tip_en": "Files in the Recycle Bin. Empty the Recycle Bin to free space."
+    },
+    "scoop": {
+      "name": "Scoop 应用",
+      "company": "Scoop",
+      "tip": "Scoop 安装的命令行工具，可卸载不用的。",
+      "name_en": "Scoop apps",
+      "tip_en": "Scoop-installed CLI tools. Uninstall unused ones."
+    },
+    "chocolatey": {
+      "name": "Chocolatey",
+      "company": "Chocolatey",
+      "tip": "Chocolatey 包管理器和缓存。",
+      "name_en": "Chocolatey",
+      "tip_en": "Chocolatey package manager and cache."
+    },
+    "winget": {
+      "name": "winget 包",
+      "company": "Microsoft",
+      "tip": "winget 安装的软件包缓存。",
+      "name_en": "winget packages",
+      "tip_en": "winget-installed package cache."
+    }
+  },
+  "deletion_levels": {
+    "safe": [
+      "Cargo 缓存",
+      "Go 模块缓存",
+      "Gradle 缓存",
+      "Maven 仓库",
+      "NVIDIA 显卡缓存",
+      "Windows 更新缓存",
+      "npm 缓存",
+      "pip 缓存",
+      "临时文件目录",
+      "传递优化缓存",
+      "回收站",
+      "安装包缓存",
+      "安装包缓存(Package Cache)",
+      "缓存目录"
+    ],
+    "cleanup": [
+      "360 软件",
+      "Chocolatey",
+      "Docker",
+      "Edge 浏览器",
+      "Firefox 浏览器",
+      "Google Chrome 浏览器",
+      "OneDrive",
+      "QQ",
+      "QQ 浏览器",
+      "QQ(NT版)",
+      "QQ浏览器",
+      "QQ音乐",
+      "QQ频道",
+      "Scoop 应用",
+      "VS Code",
+      "winget 包",
+      "下载目录",
+      "优酷",
+      "剪映",
+      "剪映专业版",
+      "哔哩哔哩",
+      "夸克浏览器",
+      "微信",
+      "微信(新版)",
+      "微信文件",
+      "搜狗",
+      "爱奇艺",
+      "百度网盘",
+      "网易云音乐",
+      "网易软件目录",
+      "腾讯会议",
+      "腾讯微云",
+      "腾讯手游助手",
+      "腾讯文件目录",
+      "腾讯新闻",
+      "腾讯电脑管家",
+      "腾讯视频",
+      "芒果TV",
+      "迅雷",
+      "钉钉",
+      "钉钉文件",
+      "阿里云盘",
+      "飞书",
+      "飞书(Lark)"
+    ],
+    "caution": [
+      ".NET 运行时",
+      "ANSYS",
+      "Adobe 系列软件",
+      "Anaconda",
+      "Android SDK",
+      "Android Studio",
+      "Autodesk 软件",
+      "Battle.net 暴雪平台",
+      "EA Games 游戏目录",
+      "Eclipse",
+      "Electronic Arts 目录",
+      "Epic Games 平台",
+      "GOG Galaxy 平台",
+      "Git",
+      "Google 目录",
+      "IntelliJ IDEA",
+      "Lethal Company",
+      "MATLAB",
+      "Microsoft Office",
+      "Microsoft 游戏目录",
+      "Minecraft",
+      "Miniconda",
+      "OPPO 软件",
+      "Origin / EA 游戏平台",
+      "PyCharm",
+      "Riot Games 拳头游戏",
+      "Rockstar Games",
+      "Steam 平台",
+      "Steam 游戏库",
+      "ToDesk 远程",
+      "Ubisoft 平台",
+      "VMware",
+      "VirtualBox",
+      "Visual Studio",
+      "WPS Office",
+      "WeGame 游戏平台",
+      "Windows.old 旧系统",
+      "node_modules 依赖",
+      "vivo 软件",
+      "休眠文件",
+      "公共文件目录",
+      "华为软件",
+      "原神",
+      "向日葵远程",
+      "小米软件",
+      "崩坏系列游戏",
+      "崩坏：星穹铁道",
+      "暴雪游戏目录",
+      "穿越火线",
+      "系统恢复环境",
+      "系统核心目录",
+      "绝区零",
+      "罗技外设",
+      "腾讯应用宝(安卓模拟器)",
+      "赛睿外设",
+      "金山软件",
+      "雷蛇外设",
+      "页面文件",
+      "驱动仓库",
+      "鸣潮"
+    ]
+  }
+}

@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# 运行时数据（个人磁盘扫描结果，含隐私路径，切勿提交）
+data/
+reports/
+c_disk_monitor_data/
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# 工作区内部数据（不属于本项目）
+.workbuddy/
