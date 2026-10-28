@@ -46,6 +46,27 @@ Don't want to install Python? Grab the prebuilt Windows build:
 > 说明：exe 由 PyInstaller 打包，部分杀毒软件会对这类程序报"未知风险"，属常见误报，源码完全公开可自行核对（也可用下面的源码方式运行）。
 > Note: the exe is built with PyInstaller. Some antivirus tools flag such builds as unknown — a common false positive. The source is fully public, or just run from source below.
 
+### 打包版怎么改识别库 · Editing the DB in the exe build
+
+exe 版把识别库**封在 exe 内部**，直接改不了。想改就把它导出到 exe 旁边：
+
+```bash
+C盘空间监视器.exe --export-db
+```
+
+会在 exe 同目录生成 `software_db.json`。编辑它（或丢给你的 AI 改），**下次运行会自动优先加载这个外部文件**。想恢复内置库，删掉它即可。
+
+The exe build bundles the DB **inside the exe**, so you can't edit it in place. Export it next to the exe:
+
+```bash
+C盘空间监视器.exe --export-db
+```
+
+This creates `software_db.json` beside the exe. Edit it (or hand it to your AI) — **the app prefers that external file on the next run**. Delete it to fall back to the built-in DB.
+
+> 加载优先级 · Load order: `CDM_DB_FILE` 环境变量 > exe 同目录的 `software_db.json` > 内置库。
+> 改坏了也不会崩：解析失败会自动退回内置库。
+
 ## 快速开始 · Quick Start
 
 ```bash
@@ -79,6 +100,7 @@ python install_task.py               # 注册「每天自动扫描」计划任�
 python install_task.py --uninstall   # 取消计划任务 / remove the scheduled task
 python monitor.py --install-task     # 同上（打包成 exe 后用它注册）/ same, for the exe build
 python monitor.py --uninstall-task   # 同上（取消）/ same, to remove
+python monitor.py --export-db        # 把识别库导出到 exe 同目录供编辑 / export DB for editing
 ```
 
 ### 查看任意两次扫描之间的对比 · Compare any two scans

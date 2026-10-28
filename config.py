@@ -36,8 +36,10 @@ RECORD_INTERVAL_SECONDS = 24 * 60 * 60  # 86400 秒 = 1 天
 # 注意：数据目录（DATA_ROOT）不复用这个变量，始终指向用户 AppData，避免每次运行换地方。
 if getattr(sys, "frozen", False):
     BASE_DIR = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(sys.executable)))
+    EXE_DIR = os.path.dirname(os.path.abspath(sys.executable))
 else:
     BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+    EXE_DIR = BASE_DIR
 
 _env_data_root = os.environ.get("CDM_DATA_DIR", "").strip()
 if _env_data_root:
@@ -51,15 +53,48 @@ REPORT_DIR = os.path.join(DATA_ROOT, "reports")
 
 # ============ 软件 / 公司文件夹识别库 ============
 # 识别库已独立到 software_db.json（纯数据、无代码，方便 AI 或人工直接增改）。
-# 本文件只负责在启动时读入它。识别内容仅供参考，实际以软件内显示为准。
-_SOFTWARE_DB_PATH = os.path.join(BASE_DIR, "software_db.json")
-try:
-    with open(_SOFTWARE_DB_PATH, "r", encoding="utf-8") as _f:
-        _db = json.load(_f)
+# 识别内容仅供参考，实际以软件内显示为准。
+#
+# 加载优先级（越靠前越优先）：
+#   1. 环境变量 CDM_DB_FILE 指定的文件
+#   2. exe 同目录下的 software_db.json（打包版用户自己放一份即可覆盖内置库）
+#   3. 内置库（源码目录 / exe 内打包的那份）
+# 解析失败会自动跳到下一个候选，不会因为用户改坏了 JSON 就退化成空库。
+BUILTIN_DB_PATH = os.path.join(BASE_DIR, "software_db.json")
+EXTERNAL_DB_PATH = os.path.join(EXE_DIR, "software_db.json")
+
+
+def _db_candidates():
+    cands = []
+    env = os.environ.get("CDM_DB_FILE", "").strip()
+    if env:
+        cands.append(env)
+    # 打包版：exe 同目录的库优先于内置库（用户可改）
+    if getattr(sys, "frozen", False):
+        cands.append(EXTERNAL_DB_PATH)
+    cands.append(BUILTIN_DB_PATH)
+    return cands
+
+
+def _load_db():
+    """按优先级找第一个能解析的识别库，返回 (数据, 路径)。"""
+    for path in _db_candidates():
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                db = json.load(f)
+        except (OSError, ValueError):
+            continue
+        if isinstance(db, dict) and "software_db" in db:
+            return db, path
+    return None, None
+
+
+_db, SOFTWARE_DB_FILE = _load_db()
+if _db:
     SOFTWARE_DB = _db.get("software_db", {})
     DELETION_LEVELS = {k: set(v) for k, v in _db.get("deletion_levels", {}).items()}
-except (OSError, ValueError):
-    # 识别库缺失或损坏时，退化为空库，程序仍能运行（只是不识别软件名）
+else:
+    # 三个候选都读不出来（文件缺失或全被改坏）：退化为空库，程序仍能运行
     SOFTWARE_DB = {}
     DELETION_LEVELS = {"safe": set(), "cleanup": set(), "caution": set()}
 

@@ -85,6 +85,39 @@ def maybe_report(auto_open=False):
     return html_path
 
 
+def export_db():
+    """把当前使用的识别库导出到 exe（或脚本）同目录，方便用户直接编辑。
+
+    打包成 exe 后识别库被封在 exe 内，用户改不了；导出到同目录后，程序会优先加载它。
+    """
+    import shutil
+    src = config.SOFTWARE_DB_FILE
+    dst = config.EXTERNAL_DB_PATH
+    if not src or not os.path.isfile(src):
+        log().error("找不到内置识别库，无法导出。" if config.LANG == "zh"
+                    else "Built-in DB not found, cannot export.")
+        return 1
+    if os.path.abspath(src) == os.path.abspath(dst):
+        log().info(("识别库已经是外部文件，直接编辑即可：%s" if config.LANG == "zh"
+                    else "DB is already an external file, just edit it: %s") % dst)
+        return 0
+    if os.path.exists(dst) and "--force" not in sys.argv:
+        log().warning(("目标已存在，未覆盖：%s" if config.LANG == "zh"
+                       else "Target exists, not overwritten: %s") % dst)
+        log().warning("如需覆盖请加 --force / add --force to overwrite")
+        return 1
+    try:
+        shutil.copyfile(src, dst)
+    except OSError as e:
+        log().error(("导出失败：%s" if config.LANG == "zh" else "Export failed: %s") % e)
+        return 1
+    log().info(("已导出识别库到：%s" if config.LANG == "zh" else "DB exported to: %s") % dst)
+    log().info("用文本编辑器或你的 AI 修改这个文件即可，改完直接运行，程序会优先用它。"
+               if config.LANG == "zh" else
+               "Edit it with any text editor or your AI; the app will prefer it on next run.")
+    return 0
+
+
 def main():
     once = "--once" in sys.argv
     auto_open = "--open" in sys.argv
@@ -98,6 +131,11 @@ def main():
         import install_task
         sys.exit(install_task.uninstall() if "--uninstall-task" in sys.argv
                  else install_task.install())
+
+    # 把「当前正在用的识别库」导出到 exe 同目录（或指定路径），供用户用文本编辑器/AI 修改。
+    # 打包成 exe 后识别库被封在 exe 里，导出后放到 exe 旁边即自动优先加载。
+    if "--export-db" in sys.argv:
+        sys.exit(export_db())
 
     # 「只查看历史对比」模式：不扫描，直接读已有快照生成报告页并打开。
     if report_only:
