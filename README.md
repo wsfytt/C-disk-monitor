@@ -9,8 +9,8 @@ A pure-Python Windows tool: periodically scans the C drive, finds out "which sof
 
 ## 功能 · Features
 
-- 深度扫描 C 盘，逐文件夹统计大小，并识别所属软件/公司（Origin、EA、Steam、微信、QQ、Adobe、NVIDIA 等几十种常见「C 盘杀手」）
-  Deeply scans the C drive, measures each folder, and identifies the owning software/company (dozens of common "C drive hogs": Origin, EA, Steam, WeChat, QQ, Adobe, NVIDIA, etc.)
+- 深度扫描 C 盘，逐文件夹统计大小，并识别所属软件/公司（微信、WPS、Adobe、NVIDIA、Microsoft Office、Chrome 等上百条识别规则）
+  Deeply scans the C drive, measures each folder, and identifies the owning software/company (over a hundred rules covering WeChat, WPS, Adobe, NVIDIA, Microsoft Office, Chrome, etc.)
 - 定时记录快照，对比两次快照，告诉你「这段时间 C 盘减少了多少、是哪个文件夹变大导致的」
   Records snapshots on a schedule and diffs them, telling you "how much C drive space shrank and which folder grew"
 - 报告里每个文件夹标明：完整路径、是什么、之前/现在大小、增减量、删除建议等级（✅ 可放心删 / 🟡 建议清理 / 🔴 谨慎）
@@ -194,9 +194,9 @@ python -m unittest discover -s tests -v
 
 ## 商标声明 · Trademarks
 
-本项目与文中提及的任何公司（EA、Valve、Epic Games、腾讯、阿里巴巴、字节跳动、Adobe、Google、Microsoft、NVIDIA 等）均无关联，也未获其背书。所有产品名称、软件名称与商标归其各自所有者，此处仅用于说明文件夹用途。
+本项目与文中提及的任何公司（腾讯、阿里巴巴、字节跳动、Adobe、Google、Microsoft、NVIDIA、金山 等）均无关联，也未获其背书。所有产品名称、软件名称与商标归其各自所有者，此处仅用于说明文件夹用途。
 
-This project is not affiliated with or endorsed by any company mentioned (EA, Valve, Epic Games, Tencent, Alibaba, ByteDance, Adobe, Google, Microsoft, NVIDIA, etc.). All product names, software names and trademarks belong to their respective owners and are used here only to describe folder purposes.
+This project is not affiliated with or endorsed by any company mentioned (Tencent, Alibaba, ByteDance, Adobe, Google, Microsoft, NVIDIA, Kingsoft, etc.). All product names, software names and trademarks belong to their respective owners and are used here only to describe folder purposes.
 
 ## 许可证 · License
 

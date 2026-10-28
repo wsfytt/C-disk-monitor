@@ -38,17 +38,15 @@ class TestIdentify(unittest.TestCase):
         self.assertIsNone(config.identify(r"c:\my random folder"))
 
     def test_short_key_not_matched_inside_word(self):
-        # 曾经被 "edge" 命中，误判成 Edge 浏览器
-        self.assertIsNone(config.identify(
-            r"C:\Users\x\AppData\Local\CrewChiefV4\Sounds\voice\acknowledge"))
-        # 曾经被 "pip" 命中
-        self.assertIsNone(config.identify(
-            r"C:\ProgramData\SOLIDWORKS\SOLIDWORKS 2024\design library\routing\piping"))
-        # 曾经被 "npm" 命中
-        self.assertIsNone(config.identify(
-            r"C:\Users\x\.dsh\dsh-runtimes\dsh-primary-runtime\dependencies\pnpm"))
-        # 曾经被 "go" 命中
-        self.assertIsNone(config.identify(r"C:\ProgramData\leigod_NN_7002"))
+        # 短键不能在更长的单词内部命中（下面每个路径里都藏着该短键）
+        # "edge" 藏在 acknowledge 里
+        self.assertIsNone(config.identify(r"C:\Users\x\data\acknowledge"))
+        # "pip" 藏在 piping 里
+        self.assertIsNone(config.identify(r"C:\Users\x\data\design\piping"))
+        # "npm" 藏在 pnpm 里
+        self.assertIsNone(config.identify(r"C:\Users\x\projects\app\pnpm-store"))
+        # "go" 藏在 algorithms 里
+        self.assertIsNone(config.identify(r"C:\Users\x\docs\algorithms"))
 
     def test_camel_case_boundary_still_matches(self):
         # FontCache 里的 "Cache" 是驼峰词首，必须仍然命中
