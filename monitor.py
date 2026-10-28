@@ -93,6 +93,12 @@ def main():
     # 初始化日志（写到数据目录，常驻/计划任务出错也能留痕）
     setup_logging(config.DATA_ROOT)
 
+    # 计划任务注册 / 取消（打包成 exe 后，用同一个 exe 带参数即可完成，无需单独脚本）
+    if "--install-task" in sys.argv or "--uninstall-task" in sys.argv:
+        import install_task
+        sys.exit(install_task.uninstall() if "--uninstall-task" in sys.argv
+                 else install_task.install())
+
     # 「只查看历史对比」模式：不扫描，直接读已有快照生成报告页并打开。
     if report_only:
         snaps = scanner.load_snapshots()

@@ -80,30 +80,45 @@ class TestBuildDiff(unittest.TestCase):
         self.assertEqual(diff["disk_used_change"], 30 * MB)
         self.assertEqual(len(diff["grew"]), 1)
         self.assertEqual(diff["grew"][0]["change"], 20 * MB)
-        # A 是已识别的顶层目录，已解释比例 = 20MB / 30MB
-        self.assertAlmostEqual(diff["explained_ratio"], 20 / 30, places=3)
+        # 只有 A 在增长且已识别 → 已解释比例 100%
+        self.assertAlmostEqual(diff["explained_ratio"], 1.0, places=3)
 
     def test_explained_ratio_dedup(self):
-        # 父子目录重复计数：NetEase 和 NetEase\CloudMusic 是同一份增长，不能被算两遍
+        # 父子目录重复计数：NetEase 和 NetEase\CloudMusic 是同一份增长，分母不能被算两遍
         prev = self._snap(100 * MB, [
             {"path": r"C:\NetEase", "name": "NetEase", "size": 10 * MB, "software_name": "网易软件目录"},
             {"path": r"C:\NetEase\CloudMusic", "name": "CloudMusic", "size": 8 * MB, "software_name": "网易云音乐"},
+            {"path": r"C:\Mystery", "name": "Mystery", "size": 10 * MB},
         ])
         curr = self._snap(130 * MB, [
             {"path": r"C:\NetEase", "name": "NetEase", "size": 30 * MB, "software_name": "网易软件目录"},
             {"path": r"C:\NetEase\CloudMusic", "name": "CloudMusic", "size": 28 * MB, "software_name": "网易云音乐"},
+            {"path": r"C:\Mystery", "name": "Mystery", "size": 30 * MB},
         ])
         diff = reporter.build_diff(prev, curr)
-        # 顶层 NetEase 增长 20MB，子目录 CloudMusic 增长 20MB（被父目录覆盖），去重后只算一次
-        self.assertEqual(diff["total_growth"], 40 * MB)
-        self.assertAlmostEqual(diff["explained_ratio"], 20 / 30, places=3)
+        # grew 列表仍逐条列（含父子重复 20MB + 20MB + 20MB）
+        self.assertEqual(diff["total_growth"], 60 * MB)
+        # 已解释比例只按顶层算：已识别 20MB / 顶层总增长 40MB = 50%
+        self.assertAlmostEqual(diff["explained_ratio"], 0.5, places=3)
 
     def test_explained_ratio_ignores_unrecognized(self):
-        # 未识别文件夹的增长不计入已解释比例分子
+        # 未识别文件夹的增长不计入分子
         prev = self._snap(100 * MB, [{"path": r"C:\A", "name": "A", "size": 10 * MB}])
         curr = self._snap(130 * MB, [{"path": r"C:\A", "name": "A", "size": 30 * MB}])
         diff = reporter.build_diff(prev, curr)
         self.assertEqual(diff["explained_ratio"], 0.0)
+
+    def test_explained_ratio_never_exceeds_one(self):
+        # 磁盘净变化被清理抵消时（增长 > 净减少），比例也不能超过 100%
+        prev = self._snap(200 * MB, [
+            {"path": r"C:\Big", "name": "Big", "size": 100 * MB, "software_name": "缓存目录"},
+        ])
+        curr = self._snap(150 * MB, [
+            {"path": r"C:\Big", "name": "Big", "size": 150 * MB, "software_name": "缓存目录"},
+        ])
+        diff = reporter.build_diff(prev, curr)
+        self.assertLessEqual(diff["explained_ratio"], 1.0)
+        self.assertEqual(diff["explained_ratio"], 1.0)
 
     def test_shrink_and_new(self):
         prev = self._snap(200 * MB, [{"path": r"C:\B", "name": "B", "size": 50 * MB}])

@@ -5,6 +5,11 @@ __pycache__/
 .venv/
 venv/
 
+# PyInstaller 打包产物
+build/
+dist/
+*.spec
+
 # 运行时数据（个人磁盘扫描结果，含隐私路径，切勿提交）
 data/
 reports/

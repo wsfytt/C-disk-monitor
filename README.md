@@ -29,6 +29,23 @@ A pure-Python Windows tool: periodically scans the C drive, finds out "which sof
 - Python 3.8+（标准库即可，无第三方依赖）
   Python 3.8+ (standard library only, no third-party dependencies)
 
+## 下载即用（不用装 Python）· Download the ready-to-run build
+
+不想装 Python？直接下载打包好的 Windows 版，解压后双击 bat 就能用：
+
+- 打开 [Releases](https://github.com/wsfytt/C-disk-monitor/releases) 页面
+- 下载 `C-Disk-Monitor-v0.1.0-win64.zip`
+- 解压，双击 `立即扫描一次 Scan Now.bat`
+
+Don't want to install Python? Grab the prebuilt Windows build:
+
+- Open the [Releases](https://github.com/wsfytt/C-disk-monitor/releases) page
+- Download `C-Disk-Monitor-v0.1.0-win64.zip`
+- Unzip and double-click `立即扫描一次 Scan Now.bat`
+
+> 说明：exe 由 PyInstaller 打包，部分杀毒软件会对这类程序报"未知风险"，属常见误报，源码完全公开可自行核对（也可用下面的源码方式运行）。
+> Note: the exe is built with PyInstaller. Some antivirus tools flag such builds as unknown — a common false positive. The source is fully public, or just run from source below.
+
 ## 快速开始 · Quick Start
 
 ```bash
@@ -60,6 +77,8 @@ python monitor.py --report           # 不扫描，直接打开带「历史对�
 python overview.py                   # 生成「当前占用盘点」报告 / generate a "current usage" report
 python install_task.py               # 注册「每天自动扫描」计划任务 / register the daily-scan task
 python install_task.py --uninstall   # 取消计划任务 / remove the scheduled task
+python monitor.py --install-task     # 同上（打包成 exe 后用它注册）/ same, for the exe build
+python monitor.py --uninstall-task   # 同上（取消）/ same, to remove
 ```
 
 ### 查看任意两次扫描之间的对比 · Compare any two scans
@@ -147,6 +166,23 @@ Folder paths in reports contain your Windows username (e.g. `C:\Users\alice\AppD
 请勿把 `data/`、`reports/` 或 `c_disk_monitor_data/` 目录提交到公开仓库——里面含有你本机的目录结构和用户名等个人信息（`.gitignore` 已默认排除）。
 
 Do not commit `data/`, `reports/` or `c_disk_monitor_data/` to a public repo — they contain your local directory structure and username (already excluded by `.gitignore`).
+
+## 打包成 exe · Building the exe
+
+用 [PyInstaller](https://pyinstaller.org/) 打成单文件 exe（含 `software_db.json`），发布包里的 bat 会调用它：
+
+Pack a single-file exe with [PyInstaller](https://pyinstaller.org/) (bundling `software_db.json`); the bat launchers in the release zip call it:
+
+```bash
+pip install pyinstaller
+pyinstaller --onefile --console --name "C盘空间监视器" ^
+  --add-data "software_db.json;." ^
+  --exclude-module tkinter --exclude-module unittest monitor.py
+```
+
+产物在 `dist\` 下。把 exe 和四个 bat 放到同一个文件夹里即为免安装版。
+
+Output lands in `dist\`. Put the exe together with the four bat files in one folder — that's the portable build.
 
 ## 开发与测试 · Development & tests
 

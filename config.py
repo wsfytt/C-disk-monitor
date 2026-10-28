@@ -5,6 +5,7 @@
 """
 
 import os
+import sys
 import json
 
 # ============ 要监视的盘符 ============
@@ -31,7 +32,12 @@ RECORD_INTERVAL_SECONDS = 24 * 60 * 60  # 86400 秒 = 1 天
 # 而不是项目目录里——这样 clone/分享代码时，个人磁盘数据不会混进仓库，
 # 也不会污染项目所在的目录。
 # 如需自定义，可设置环境变量 CDM_DATA_DIR 指向你的目录（优先于默认值）。
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# 资源目录：源码运行时是脚本所在目录；PyInstaller 打包成 exe 后是解包临时目录（sys._MEIPASS）。
+# 注意：数据目录（DATA_ROOT）不复用这个变量，始终指向用户 AppData，避免每次运行换地方。
+if getattr(sys, "frozen", False):
+    BASE_DIR = getattr(sys, "_MEIPASS", os.path.dirname(os.path.abspath(sys.executable)))
+else:
+    BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 _env_data_root = os.environ.get("CDM_DATA_DIR", "").strip()
 if _env_data_root:
@@ -46,7 +52,7 @@ REPORT_DIR = os.path.join(DATA_ROOT, "reports")
 # ============ 软件 / 公司文件夹识别库 ============
 # 识别库已独立到 software_db.json（纯数据、无代码，方便 AI 或人工直接增改）。
 # 本文件只负责在启动时读入它。识别内容仅供参考，实际以软件内显示为准。
-_SOFTWARE_DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "software_db.json")
+_SOFTWARE_DB_PATH = os.path.join(BASE_DIR, "software_db.json")
 try:
     with open(_SOFTWARE_DB_PATH, "r", encoding="utf-8") as _f:
         _db = json.load(_f)

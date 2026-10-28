@@ -140,14 +140,15 @@ def build_diff(prev, curr):
     disk_used_change = curr["disk_used"] - prev["disk_used"]
     total_growth = sum(x["change"] for x in grew)
 
-    # 已解释比例：能被识别库认出来的「去重」增长 / 磁盘总增长。
-    # 注意：grew 里父子目录会重复计数（例如 NetEase 和 NetEase\CloudMusic 同一次增长被算两遍），
-    # 直接拿 total_growth 当分子会超过 100%。这里只统计「顶层」目录（其祖先不在 grew 里），
-    # 才是和磁盘真实变化可比的口径。
+    # 已解释比例：在「能看到的总增长」里，识别库认出了多少。
+    # 分母不用磁盘净变化（disk_used_change）：净变化会被同时发生的清理抵消，
+    # 导致分子比分母大、比例超过 100%（实测过：临时目录涨 445MB、净减少只有 338MB）。
+    # 这里统一用「顶层目录的增长总和」做分母，结果稳定落在 0~100%。
     grew_paths = {x["path"] for x in grew}
-    identified_top_growth = 0
+    top_growth_total = 0
+    top_growth_identified = 0
     for x in grew:
-        # 是否有祖先目录也在 grew 里？有则跳过（它的增长已被祖先计入）
+        # 有祖先目录也在 grew 里的，跳过（它的增长已被祖先计入，避免父子目录重复计数）
         parent = os.path.dirname(x["path"])
         has_ancestor = False
         while parent != os.path.dirname(parent):
@@ -157,11 +158,12 @@ def build_diff(prev, curr):
             parent = os.path.dirname(parent)
         if has_ancestor:
             continue
+        top_growth_total += x["change"]
         if x["software_name"] and x["software_name"] != "未识别文件夹":
-            identified_top_growth += x["change"]
+            top_growth_identified += x["change"]
 
-    # 已解释比例 = 顶层已识别目录的增长 / 磁盘总增长（0~1，可能因缓存清理等略超或为负，展示时再 clamp）
-    explained = identified_top_growth / disk_used_change if disk_used_change > 0 else 0.0
+    explained = top_growth_identified / top_growth_total if top_growth_total > 0 else 0.0
+    explained = min(max(explained, 0.0), 1.0)
 
     # 新出现的软件（上次没有、这次有的软件条目）
     prev_sw = set()
@@ -403,7 +405,7 @@ def render_html(diff):
       <div class="stat"><div class="label" data-i18n="change_label">空间变化</div><div class="val" style="color:#e74c3c">__CHANGE__</div></div>
       <div class="stat"><div class="label" data-i18n="explained_label">已解释比例</div><div class="val">__EXPLAINED__</div></div>
     </div>
-    <div class="sub" data-i18n="explained_hint">已解释比例 =（顶层已识别目录的增长字节数 ÷ C 盘减少的字节数）×100%，按字节量算、父子目录去重，不是按条目个数算。越高说明识别库覆盖越好；偏低说明大部分增长来自「未识别文件夹」，建议扩充识别库。</div>
+    <div class="sub" data-i18n="explained_hint">已解释比例 =（顶层已识别目录的增长 ÷ 所有顶层目录的增长总和）×100%，按字节量算、父子目录去重，不是按条目个数算。越高说明识别库覆盖越好；偏低说明大部分增长来自「未识别文件夹」，建议扩充识别库。</div>
   </div>
 
   <div class="tabs">
