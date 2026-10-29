@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "c-disk-monitor"
-version = "0.1.0"
+version = "0.1.1"
 description = "A pure-Python Windows tool that scans the C drive, identifies space-hogging folders and gives deletion suggestions — scan, record and report only, never deletes."
 readme = "README.md"
 license = { text = "MIT" }

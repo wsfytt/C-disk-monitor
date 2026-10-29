@@ -34,13 +34,13 @@ A pure-Python Windows tool: periodically scans the C drive, finds out "which sof
 不想装 Python？直接下载打包好的 Windows 版，解压后双击 bat 就能用：
 
 - 打开 [Releases](https://github.com/wsfytt/C-disk-monitor/releases) 页面
-- 下载 `C-Disk-Monitor-v0.1.0-win64.zip`
+- 下载 `C-Disk-Monitor-v0.1.1-win64.zip`
 - 解压，双击 `立即扫描一次 Scan Now.bat`
 
 Don't want to install Python? Grab the prebuilt Windows build:
 
 - Open the [Releases](https://github.com/wsfytt/C-disk-monitor/releases) page
-- Download `C-Disk-Monitor-v0.1.0-win64.zip`
+- Download `C-Disk-Monitor-v0.1.1-win64.zip`
 - Unzip and double-click `立即扫描一次 Scan Now.bat`
 
 > 说明：exe 由 PyInstaller 打包，部分杀毒软件会对这类程序报"未知风险"，属常见误报，源码完全公开可自行核对（也可用下面的源码方式运行）。
