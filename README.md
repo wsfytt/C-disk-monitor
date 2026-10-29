@@ -136,6 +136,32 @@ To customize, set the `CDM_DATA_DIR` environment variable to your folder.
 
 Upgrading from an older version (data written one level above the project): move the old `c_disk_monitor_data` into `%LOCALAPPDATA%\c_disk_monitor`, or point `CDM_DATA_DIR` at it. Old full-format snapshots are auto-aligned to the current schema on read.
 
+### 识别库指纹：报告能证明自己用的是哪份库 · DB fingerprint
+
+识别库可以随意增改，那半年后回头看一份老报告，怎么知道当时是按哪份库算的？程序给每个库版本算了一个**指纹**。
+
+The identification DB is editable, so months later how do you know which version a report was produced with? Each DB version gets a **fingerprint**.
+
+- 指纹 = 库内容规范化（固定键序、去掉多余空格）后算 sha256，取前 12 位，例如 `ecea661315ef`。**内容一样指纹就一样，改一个字指纹就变。**
+  The fingerprint is the first 12 hex chars of sha256 over the normalized DB. Same content → same id; one character changed → different id.
+- 每次扫描，快照里会记下当时生效的 4 项信息：`id`（指纹）、`count`（条数）、`matcher`（匹配规则版本）、`source`（内置 / exe 同目录 / 环境变量）。
+  Every scan records four fields: `id`, `count`, `matcher` (matching-rule version), `source` (bundled / beside the exe / env var).
+- 报告页脚会显示「本报告依据识别库 `xxxxxxxxxxxx`（126 条，匹配规则 v2，内置）计算」。
+  The report footer shows which DB produced it.
+- 识别库本体按指纹另存一份到 `data/dbs/db_<指纹>.json`，**同指纹只存一次**。以后想查「当时那张表里到底有没有这一条」，直接打开对应的存档文件。
+  The DB itself is archived by fingerprint to `data/dbs/db_<id>.json`, deduplicated by content — so you can always reopen the exact table used back then.
+- `matcher` 是匹配规则的版本号（1 = 早期裸子串匹配，2 = 整词匹配 + 驼峰边界）。识别逻辑一改就 +1，避免出现「库没变、结果却变了」这种没法解释的情况。
+  `matcher` versions the matching logic itself (1 = early naive substring, 2 = whole-word + camelCase boundary). It bumps whenever the logic changes, so "same DB, different result" always has an explanation.
+
+> 指纹只是「身份证号」，不是库本身 —— 它负责认出是哪一份，内容由 `data/dbs/` 下的存档负责。
+> The fingerprint is an ID, not the content; the archived file under `data/dbs/` holds the actual data.
+
+**为什么报告里的名字和当初扫描时不一样？ / Why do names differ from what you saw at scan time?**
+
+报告生成时，所有快照（包括很老的）都按**当前**识别库重新解释，所以同一个文件夹在任何一次对比里都叫同一个名字。如果当初扫描时的名字不同，会在下面用小字注明「扫描时记为：xxx」。
+
+Reports re-interpret every snapshot with the **current** DB, so a folder keeps one consistent name across comparisons. If the scan-time name differed, a small note "Recorded as: xxx" is shown underneath.
+
 ## 配置 · Configuration
 
 在 `config.py` 中可调整 / Tunable in `config.py`:

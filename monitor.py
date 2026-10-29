@@ -125,6 +125,9 @@ def main():
 
     # 初始化日志（写到数据目录，常驻/计划任务出错也能留痕）
     setup_logging(config.DATA_ROOT)
+    # 按指纹把当前识别库另存一份到 data/dbs/，以后能查回「当时用的是哪份库」。
+    # 同指纹已存在会自动跳过；任何失败都不影响主流程。
+    config.archive_db()
 
     # 计划任务注册 / 取消（打包成 exe 后，用同一个 exe 带参数即可完成，无需单独脚本）
     if "--install-task" in sys.argv or "--uninstall-task" in sys.argv:

@@ -15,36 +15,114 @@ import i18n
 from scanner import human_size
 
 
-def _slim_snapshots(snaps):
-    """把快照精简成可内嵌到网页的 JSON（只留已识别目录 + ≥10MB 的未识别目录）。"""
-    slim = []
-    for s in snaps:
-        dirs_slim = []
-        for d in s["dirs"]:
-            if "software_name" in d or d["size"] >= 10 * 1024 * 1024:
-                dirs_slim.append({
-                    "path": d["path"], "size": d["size"],
-                    "software_name": d.get("software_name", ""),
-                    "software_name_en": d.get("software_name_en", ""),
-                    "company": d.get("company", ""),
-                    "tip": d.get("tip", ""),
-                    "tip_en": d.get("tip_en", ""),
-                })
-        slim.append({
-            "time": s["time"],
-            "disk_used": s["disk_used"],
-            "disk_free": s["disk_free"],
-            "disk_total": s["disk_total"],
-            "dirs": dirs_slim,
-        })
-    return slim
+# 内嵌历史的数据体积预算（字节）。
+# 快照是无限累积的：15 份已让页面到 3.2MB，一年 365 份会到 ~78MB，浏览器直接卡死。
+# 所以内嵌时按体积封顶——从最新的往前取，加满就停。
+HISTORY_EMBED_BUDGET = 3_500_000
+# 无论预算多紧，至少内嵌这么多份（少于 2 份就没法做对比了）
+HISTORY_MIN_EMBED = 2
+
+
+def _slim_one(s):
+    """把单份快照精简成可内嵌的 dict（只留已识别目录 + ≥10MB 的未识别目录）。
+
+    额外带一个 k 字段：这条路径按「当前识别库」命中的键名（未命中不写）。
+    网页端靠它查表，把名字/说明统一成当前库的说法，避免同一文件夹在
+    不同快照里因为中途改库而前后叫法不一致。
+    """
+    dirs_slim = []
+    for d in s["dirs"]:
+        if "software_name" in d or d["size"] >= 10 * 1024 * 1024:
+            item = {
+                "path": d["path"], "size": d["size"],
+                "software_name": d.get("software_name", ""),
+                "software_name_en": d.get("software_name_en", ""),
+                "company": d.get("company", ""),
+                "tip": d.get("tip", ""),
+                "tip_en": d.get("tip_en", ""),
+            }
+            key = config.match_key(d["path"])
+            if key:
+                item["k"] = key
+            dirs_slim.append(item)
+    return {
+        "time": s["time"],
+        "disk_used": s["disk_used"],
+        "disk_free": s["disk_free"],
+        "disk_total": s["disk_total"],
+        "db": s.get("db", {}),
+        "dirs": dirs_slim,
+    }
+
+
+def _slim_snapshots(snaps, budget=None, min_keep=None):
+    """把快照精简成可内嵌到网页的 JSON。
+
+    从最新往前取，累计体积超过 budget 就停（至少保留 min_keep 份，保证能对比）。
+    返回 (内嵌列表, 快照总份数)——总份数用于在页面上说明「只含最近 N 次」。
+
+    budget / min_keep 传 None 时取模块常量（不在定义时绑定，便于测试或临时调整）。
+    """
+    if budget is None:
+        budget = HISTORY_EMBED_BUDGET
+    if min_keep is None:
+        min_keep = HISTORY_MIN_EMBED
+    kept_rev = []
+    used = 0
+    for s in reversed(snaps):
+        item = _slim_one(s)
+        size = len(json.dumps(item, ensure_ascii=False, separators=(",", ":")).encode("utf-8"))
+        if kept_rev and len(kept_rev) >= min_keep and used + size > budget:
+            break
+        kept_rev.append(item)
+        used += size
+    kept_rev.reverse()
+    return kept_rev, len(snaps)
 
 
 def _history_data_block():
-    """生成「历史对比」所需的精简快照 JSON 字符串（报告页内嵌用）。"""
+    """生成「历史对比」所需的内嵌数据。
+
+    返回 (JSON 字符串, 快照总份数, 实际内嵌份数)。总份数 ≠ 内嵌份数时，
+    页面会提示「只含最近 N 次」，避免用户以为更早的记录丢了。
+    """
     snaps = scanner.load_snapshots()
-    slim = _slim_snapshots(snaps)
-    return json.dumps(slim, ensure_ascii=False)
+    slim, total = _slim_snapshots(snaps)
+    return json.dumps(slim, ensure_ascii=False), total, len(slim)
+
+
+def _name_fields(path, snap_dir):
+    """按「当前识别库」解释一条路径，同时把扫描时记录的名字留在 *_scan 字段里。
+
+    为什么要这样做：快照里的 software_name 是扫描那一刻写死的。中途改过识别库，
+    同一文件夹在旧快照里叫「卡巴斯基」、在新快照里叫「未识别文件夹」，
+    历史对比看着像文件夹改名了。这里统一用当前库重新解释，名字就一致了；
+    当初扫描时的名字仍保留，需要时（renamed=True）在界面上以小字备注显示。
+    """
+    r = config.resolve(path)
+    scan_sw = snap_dir.get("software_name") or ""
+    scan_sw_en = snap_dir.get("software_name_en") or ""
+    if r["key"]:
+        name = r["name"]
+        name_en = r["name_en"] or r["name"]
+        company = r["company"]
+        tip = r["tip"]
+        tip_en = r["tip_en"] or r["tip"]
+    else:
+        name = "未识别文件夹"
+        name_en = "Unrecognized folder"
+        company = tip = tip_en = ""
+    return {
+        "software_name": name,
+        "software_name_en": name_en,
+        "company": company,
+        "tip": tip,
+        "tip_en": tip_en,
+        "level": r["level"],
+        "scan_sw": scan_sw,
+        "scan_sw_en": scan_sw_en,
+        "renamed": bool(scan_sw) and scan_sw != name,
+    }
 
 
 def build_diff(prev, curr):
@@ -90,15 +168,11 @@ def build_diff(prev, curr):
                 item = {
                     "path": p,
                     "name": p_curr.get("name", ""),
-                    "software_name": p_curr.get("software_name", "未识别文件夹"),
-                    "software_name_en": p_curr.get("software_name_en", ""),
-                    "company": p_curr.get("company", ""),
-                    "tip": p_curr.get("tip", ""),
-                    "tip_en": p_curr.get("tip_en", ""),
                     "prev_size": p_prev["size"],
                     "curr_size": p_curr["size"],
                     "change": change,
                 }
+                item.update(_name_fields(p, p_curr))
                 if change > 0:
                     grew.append(item)
                 else:
@@ -106,33 +180,27 @@ def build_diff(prev, curr):
         elif p_curr and not p_prev:
             # 新出现的文件夹
             if p_curr["size"] >= 1 * 1024 * 1024:
-                grew.append({
+                item = {
                     "path": p,
                     "name": p_curr.get("name", ""),
-                    "software_name": p_curr.get("software_name", "未识别文件夹"),
-                    "software_name_en": p_curr.get("software_name_en", ""),
-                    "company": p_curr.get("company", ""),
-                    "tip": p_curr.get("tip", ""),
-                    "tip_en": p_curr.get("tip_en", ""),
                     "prev_size": 0,
                     "curr_size": p_curr["size"],
                     "change": p_curr["size"],
-                })
+                }
+                item.update(_name_fields(p, p_curr))
+                grew.append(item)
         elif p_prev and not p_curr:
             # 消失的文件夹
             if p_prev["size"] >= 1 * 1024 * 1024:
-                shrank.append({
+                item = {
                     "path": p,
                     "name": p_prev.get("name", ""),
-                    "software_name": p_prev.get("software_name", "未识别文件夹"),
-                    "software_name_en": p_prev.get("software_name_en", ""),
-                    "company": p_prev.get("company", ""),
-                    "tip": p_prev.get("tip", ""),
-                    "tip_en": p_prev.get("tip_en", ""),
                     "prev_size": p_prev["size"],
                     "curr_size": 0,
                     "change": -p_prev["size"],
-                })
+                }
+                item.update(_name_fields(p, p_prev))
+                shrank.append(item)
 
     grew.sort(key=lambda x: -x["change"])
     shrank.sort(key=lambda x: x["change"])
@@ -296,6 +364,15 @@ def render_html(diff):
         lvl = config.deletion_level(sw) if sw else "unknown"
         return lvl, config.LEVEL_LABEL.get(lvl, "—"), config.LEVEL_LABEL_EN.get(lvl, "—")
 
+    def _scan_note(g):
+        """「扫描时记为 X」小字备注：只在当前库的解释与扫描时不同时出现。"""
+        if not g.get("renamed"):
+            return ""
+        zh = html_lib.escape(g.get("scan_sw") or "")
+        en = html_lib.escape(g.get("scan_sw_en") or g.get("scan_sw") or "")
+        return ("<div class='scan' data-zh>扫描时记为：%s</div>"
+                "<div class='scan' data-en style='display:none'>Recorded as: %s</div>" % (zh, en))
+
     rows = []
     for i, g in enumerate(diff["grew"][:40], 1):
         sw_zh = _sw_zh(g)
@@ -306,9 +383,9 @@ def render_html(diff):
         tip_en = _tip_en(g)
         lvl, label_zh, label_en = _label(g)
         rows.append(
-            "<tr><td>%d</td><td class='path'>%s</td><td><span data-zh>%s</span><span data-en style='display:none'>%s</span></td><td class='up'>+%s</td>"
+            "<tr><td>%d</td><td class='path'>%s</td><td><span data-zh>%s</span><span data-en style='display:none'>%s</span>%s</td><td class='up'>+%s</td>"
             "<td>%s</td><td>%s</td><td class='lvl-%s'><span data-zh>%s</span><span data-en style='display:none'>%s</span></td><td><span data-zh>%s</span><span data-en style='display:none'>%s</span></td></tr>"
-            % (i, html_lib.escape(g["path"]), html_lib.escape(tag_zh), html_lib.escape(tag_en), human_size(g["change"]),
+            % (i, html_lib.escape(g["path"]), html_lib.escape(tag_zh), html_lib.escape(tag_en), _scan_note(g), human_size(g["change"]),
                human_size(g["prev_size"]), human_size(g["curr_size"]), lvl, label_zh, label_en, html_lib.escape(tip_zh), html_lib.escape(tip_en))
         )
 
@@ -322,9 +399,9 @@ def render_html(diff):
         tip_en = _tip_en(s)
         lvl, label_zh, label_en = _label(s)
         shrink_rows.append(
-            "<tr><td>%d</td><td class='path'>%s</td><td><span data-zh>%s</span><span data-en style='display:none'>%s</span></td><td class='down'>-%s</td>"
+            "<tr><td>%d</td><td class='path'>%s</td><td><span data-zh>%s</span><span data-en style='display:none'>%s</span>%s</td><td class='down'>-%s</td>"
             "<td>%s</td><td>%s</td><td class='lvl-%s'><span data-zh>%s</span><span data-en style='display:none'>%s</span></td><td><span data-zh>%s</span><span data-en style='display:none'>%s</span></td></tr>"
-            % (i, html_lib.escape(s["path"]), html_lib.escape(tag_zh), html_lib.escape(tag_en), human_size(-s["change"]),
+            % (i, html_lib.escape(s["path"]), html_lib.escape(tag_zh), html_lib.escape(tag_en), _scan_note(s), human_size(-s["change"]),
                human_size(s["prev_size"]), human_size(s["curr_size"]), lvl, label_zh, label_en, html_lib.escape(tip_zh), html_lib.escape(tip_en))
         )
 
@@ -366,6 +443,7 @@ def render_html(diff):
   .lvl-cleanup { color: #e67e22; font-weight: bold; white-space: nowrap; }
   .lvl-caution { color: #e74c3c; font-weight: bold; white-space: nowrap; }
   .lvl-unknown { color: #95a5a6; white-space: nowrap; }
+  .scan { font-size: 11px; color: #95a5a6; margin-top: 2px; }
   ul { padding-left: 20px; }
   li { margin: 4px 0; }
   .tip { color: #555; font-size: 12px; }
@@ -432,12 +510,15 @@ def render_html(diff):
       以及「建不建议删」。✅=可放心删，🟡=建议清理，🔴=谨慎（软件本体/游戏，删前确认）。
       删除前请确认数据已备份。
     </div>
+
+    <div class="hint" style="margin-top:10px">__DBNOTE__</div>
   </div>
 
   <div id="view1" class="tabview">
     <div class="card">
       <h2 style="font-size:16px;margin-top:0" data-i18n="history_title">历史对比</h2>
       <div class="sub" data-i18n="history_sub">点选两个快照（先后顺序 = 时间顺序），下方自动显示对比结果</div>
+      __HIST_NOTE__
       <div class="snap-list" id="snapList"></div>
       <div class="hint" id="hint" data-i18n="history_hint">请选择两次扫描进行对比（点击两次）。</div>
     </div>
@@ -451,6 +532,7 @@ def render_html(diff):
 
 <script>
 const DATA = __DATA__;
+const DB = __DB__;
 const LEVELS = __LEVELS__;
 const LABELS = __LABELS__;
 const I18N = __I18N__;
@@ -508,13 +590,31 @@ function levelOf(sw) {
   return { lvl: 'unknown', label: L.unknown };
 }
 
+// 每条目录里的 k 是「按当前识别库命中的键」，DB 是当前识别库本身。
+// 这样历史快照里的名字也用当前库统一解释：中途改过库，也不会出现
+// 同一文件夹在两次快照里一个叫旧名、一个叫「未识别」。
+function dbInfo(d) {
+  return (d && d.k && DB[d.k]) ? DB[d.k] : null;
+}
 function swName(d) {
-  if (curLang === 'en') return d.software_name_en || d.software_name || '';
-  return d.software_name || '';
+  const info = dbInfo(d);
+  if (info) return curLang === 'en' ? (info.name_en || info.name) : info.name;
+  return curLang === 'en' ? 'Unrecognized folder' : '未识别文件夹';
+}
+function swZh(d) {
+  const info = dbInfo(d);
+  return info ? info.name : '未识别文件夹';
 }
 function swTip(d) {
-  if (curLang === 'en') return d.tip_en || d.tip || '';
-  return d.tip || '';
+  const info = dbInfo(d);
+  if (!info) return '';
+  return curLang === 'en' ? (info.tip_en || info.tip || '') : (info.tip || '');
+}
+// 扫描时记下的旧名字，与当前库的解释不一致时，作为小字备注显示
+function scanNote(d) {
+  const old = (d && d.software_name) || '';
+  if (!old || old === swZh(d)) return '';
+  return curLang === 'en' ? 'Recorded as: ' + old : '扫描时记为：' + old;
 }
 
 function humanSize(n) {
@@ -568,13 +668,13 @@ function compare(a, b) {
     if (pp && cc) {
       const ch = cc.size - pp.size;
       if (Math.abs(ch) >= 1024*1024) {
-        const item = { path: p, sw: swName(cc), sw_zh: cc.software_name||'', company: cc.company||'', tip: swTip(cc), prev: pp.size, curr: cc.size, change: ch };
+        const item = { path: p, sw: swName(cc), sw_zh: swZh(cc), note: scanNote(cc), company: cc.company||'', tip: swTip(cc), prev: pp.size, curr: cc.size, change: ch };
         (ch > 0 ? grew : shrank).push(item);
       }
     } else if (cc && !pp && cc.size >= 1024*1024) {
-      grew.push({ path: p, sw: swName(cc), sw_zh: cc.software_name||'', company: cc.company||'', tip: swTip(cc), prev: 0, curr: cc.size, change: cc.size });
+      grew.push({ path: p, sw: swName(cc), sw_zh: swZh(cc), note: scanNote(cc), company: cc.company||'', tip: swTip(cc), prev: 0, curr: cc.size, change: cc.size });
     } else if (pp && !cc && pp.size >= 1024*1024) {
-      shrank.push({ path: p, sw: swName(pp), sw_zh: pp.software_name||'', company: pp.company||'', tip: swTip(pp), prev: pp.size, curr: 0, change: -pp.size });
+      shrank.push({ path: p, sw: swName(pp), sw_zh: swZh(pp), note: scanNote(pp), company: pp.company||'', tip: swTip(pp), prev: pp.size, curr: 0, change: -pp.size });
     }
   }
   grew.sort((x, y) => y.change - x.change);
@@ -587,13 +687,22 @@ function compare(a, b) {
   else if (diskChange < 0) cl.innerHTML = T('space_increase') + ' <b style="color:#27ae60">' + humanSize(-diskChange) + '</b>' + T('space_cleanup_ok');
   else cl.innerHTML = T('space_nochange');
 
+  // 两次扫描之间换过识别库时说明一句：否则用户会奇怪「为什么有的行带扫描时旧名字」
+  const d1 = prev.db || {}, d2 = curr.db || {};
+  if (d1.id && d2.id && d1.id !== d2.id) {
+    cl.innerHTML += '<div class="hint" style="margin-top:6px">' + (curLang === 'en'
+      ? 'The identification DB changed between these two scans (' + (d1.count || '?') + ' → ' + (d2.count || '?') + ' entries). Names below are unified to the current DB.'
+      : '这两次扫描之间识别库变过（' + (d1.count || '?') + ' 条 → ' + (d2.count || '?') + ' 条）。名字已按当前识别库统一显示。') + '</div>';
+  }
+
   let body = '';
   if (grew.length) {
     body += '<table><tr><th>' + T('col_no') + '</th><th>' + T('col_path') + '</th><th>' + T('col_what') + '</th><th>' + T('col_grew') + '</th><th>' + T('col_prev') + '</th><th>' + T('col_curr') + '</th><th>' + T('col_level') + '</th><th>' + T('col_tip') + '</th></tr>';
     grew.slice(0, 50).forEach((g, i) => {
       const lv = levelOf(g.sw_zh || g.sw);
       const what = g.sw || (curLang === 'en' ? 'Unrecognized folder' : '未识别文件夹');
-      body += '<tr><td>'+(i+1)+'</td><td class="path">'+esc(g.path)+'</td><td>'+esc(what)+'</td><td class="up">+'+humanSize(g.change)+'</td><td>'+humanSize(g.prev)+'</td><td>'+humanSize(g.curr)+'</td><td class="lvl-'+lv.lvl+'">'+lv.label+'</td><td>'+esc(g.tip||'—')+'</td></tr>';
+      const note = g.note ? '<div class="scan">' + esc(g.note) + '</div>' : '';
+      body += '<tr><td>'+(i+1)+'</td><td class="path">'+esc(g.path)+'</td><td>'+esc(what)+note+'</td><td class="up">+'+humanSize(g.change)+'</td><td>'+humanSize(g.prev)+'</td><td>'+humanSize(g.curr)+'</td><td class="lvl-'+lv.lvl+'">'+lv.label+'</td><td>'+esc(g.tip||'—')+'</td></tr>';
     });
     body += '</table>';
   } else {
@@ -606,7 +715,8 @@ function compare(a, b) {
     shrank.slice(0, 50).forEach((s, i) => {
       const lv = levelOf(s.sw_zh || s.sw);
       const what = s.sw || (curLang === 'en' ? 'Unrecognized folder' : '未识别文件夹');
-      body += '<tr><td>'+(i+1)+'</td><td class="path">'+esc(s.path)+'</td><td>'+esc(what)+'</td><td class="down">-'+humanSize(-s.change)+'</td><td>'+humanSize(s.prev)+'</td><td>'+humanSize(s.curr)+'</td><td class="lvl-'+lv.lvl+'">'+lv.label+'</td><td>'+esc(s.tip||'—')+'</td></tr>';
+      const note = s.note ? '<div class="scan">' + esc(s.note) + '</div>' : '';
+      body += '<tr><td>'+(i+1)+'</td><td class="path">'+esc(s.path)+'</td><td>'+esc(what)+note+'</td><td class="down">-'+humanSize(-s.change)+'</td><td>'+humanSize(s.prev)+'</td><td>'+humanSize(s.curr)+'</td><td class="lvl-'+lv.lvl+'">'+lv.label+'</td><td>'+esc(s.tip||'—')+'</td></tr>';
     });
     body += '</table>';
   }
@@ -644,6 +754,42 @@ document.getElementById('snapList').addEventListener('click', (e) => {
     # 已解释比例：被识别出的增长 / 磁盘总增长（0~1，可能因舍入略超 1）
     explained_txt = ("%d%%" % round(min(max(diff["explained_ratio"], 0.0), 1.0) * 100))
 
+    # 识别库指纹说明（追溯用）：告诉他这份报告是按哪份库算的
+    src_zh, src_en = {
+        "bundled": ("内置", "built-in"),
+        "external": ("exe 同目录的外部库", "external file beside the exe"),
+        "env": ("环境变量指定的库", "file from env var"),
+        "none": ("未加载", "not loaded"),
+    }.get(config.SOFTWARE_DB_SOURCE, ("未知", "unknown"))
+    if config.SOFTWARE_DB_ID:
+        db_note = (
+            '<span data-zh>本报告依据识别库 %s（%d 条，匹配规则 v%d，%s）计算。'
+            '识别库只影响「是什么 / 删除建议 / 说明」三列，不影响路径和大小。</span>'
+            '<span data-en style="display:none">Computed with DB %s (%d entries, matcher v%d, %s). '
+            'The DB only affects the "What it is / Suggestion / Notes" columns, not paths or sizes.</span>'
+            % (config.SOFTWARE_DB_ID, config.SOFTWARE_DB_COUNT, config.MATCHER_VERSION, src_zh,
+               config.SOFTWARE_DB_ID, config.SOFTWARE_DB_COUNT, config.MATCHER_VERSION, src_en))
+    else:
+        db_note = (
+            '<span data-zh>未加载到识别库（文件缺失或格式错误），软件名将显示为「未识别文件夹」。</span>'
+            '<span data-en style="display:none">No DB loaded (missing or invalid); '
+            'names will show as unrecognized.</span>')
+
+    # 内嵌当前识别库（网页要按当前库重新解释历史快照，就得能查到条目本身）
+    db_json = json.dumps(config.SOFTWARE_DB, ensure_ascii=False)
+
+    # 历史对比内嵌数据（受体积预算限制）
+    hist_json, hist_total, hist_kept = _history_data_block()
+    if hist_kept < hist_total:
+        hist_note = (
+            '<div class="hint" style="margin-top:8px">'
+            '<span data-zh>历史对比包含最近 %d 次扫描（共 %d 次）。更早的记录仍在本地 data 目录，只是不在本页内。</span>'
+            '<span data-en style="display:none">History compare covers the latest %d of %d scans. '
+            'Older records remain in the local data folder.</span>'
+            '</div>' % (hist_kept, hist_total, hist_kept, hist_total))
+    else:
+        hist_note = ""
+
     html = (html
             .replace("__PREV__", diff["prev_time"])
             .replace("__CURR__", diff["curr_time"])
@@ -653,7 +799,10 @@ document.getElementById('snapList').addEventListener('click', (e) => {
             .replace("__EXPLAINED__", explained_txt)
             .replace("__ROWS__", rows_html)
             .replace("__SHRINK__", shrink_html)
-            .replace("__DATA__", _history_data_block().replace("</", "<\\/"))
+            .replace("__DATA__", hist_json.replace("</", "<\\/"))
+            .replace("__DB__", db_json.replace("</", "<\\/"))
+            .replace("__DBNOTE__", db_note)
+            .replace("__HIST_NOTE__", hist_note)
             .replace("__LEVELS__", levels_json)
             .replace("__LABELS__", json.dumps(
                 {"zh": config.LEVEL_LABEL, "en": config.LEVEL_LABEL_EN}, ensure_ascii=False))

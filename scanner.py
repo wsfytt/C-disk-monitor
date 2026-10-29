@@ -267,6 +267,9 @@ def save_snapshot(snapshot):
     os.makedirs(config.DATA_DIR, exist_ok=True)
     snapshot["schema"] = SNAPSHOT_SCHEMA
     snapshot["min_size"] = config.MIN_DIR_SIZE_TO_RECORD
+    # 记录扫描时生效的识别库指纹，便于以后追溯「这次的名字是按哪份库认的」。
+    # 旧快照没有这个字段，读的时候按缺失处理即可。
+    snapshot["db"] = config.db_info()
     ts = datetime.datetime.now().strftime("%Y%m%d_%H%M%S")
     path = os.path.join(config.DATA_DIR, "snapshot_%s.json" % ts)
     with open(path, "w", encoding="utf-8") as f:

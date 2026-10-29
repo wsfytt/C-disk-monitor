@@ -7,6 +7,7 @@
 import os
 import sys
 import json
+import hashlib
 
 # ============ 要监视的盘符 ============
 MONITOR_DRIVE = "C:"
@@ -99,6 +100,78 @@ else:
     DELETION_LEVELS = {"safe": set(), "cleanup": set(), "caution": set()}
 
 
+# ============ 识别库指纹（用于「这份报告依据哪份库」的追溯）============
+# 指纹是什么：把库内容规范化（固定键序、去掉多余空格）后算 sha256，取前 12 位。
+# 内容一样 => 指纹一样；改一个字 => 指纹变。它只是个「身份证号」，
+# 真正的库内容会按指纹另存一份到 data/dbs/，两者配合才能查回当时的原样。
+#
+# 匹配规则版本：识别逻辑一改就要 +1，否则会出现「库没变、结果却变了」无法解释。
+#   1 = 裸子串匹配（早期版本，有 acknowledge 命 edge 之类误判）
+#   2 = 整词匹配 + 驼峰边界（当前）
+MATCHER_VERSION = 2
+
+
+def _db_fingerprint(db):
+    """识别库内容指纹：规范化 JSON 后取 sha256 前 12 位。失败返回空串。"""
+    try:
+        raw = json.dumps(db, ensure_ascii=False, sort_keys=True,
+                         separators=(",", ":"))
+    except (TypeError, ValueError):
+        return ""
+    return hashlib.sha256(raw.encode("utf-8")).hexdigest()[:12]
+
+
+def _db_source(path):
+    """库的来源：env（环境变量指定）/ external（exe 同目录）/ bundled（内置）/ none。"""
+    if not path:
+        return "none"
+    env = os.environ.get("CDM_DB_FILE", "").strip()
+    if env and os.path.abspath(path) == os.path.abspath(env):
+        return "env"
+    # 只有打包成 exe 时，「exe 同目录」才是独立于内置库的位置；
+    # 源码运行时两者是同一个路径，应算内置库。
+    if getattr(sys, "frozen", False) and \
+            os.path.abspath(path) == os.path.abspath(EXTERNAL_DB_PATH):
+        return "external"
+    return "bundled"
+
+
+SOFTWARE_DB_ID = _db_fingerprint(_db) if _db else ""
+SOFTWARE_DB_COUNT = len(SOFTWARE_DB)
+SOFTWARE_DB_SOURCE = _db_source(SOFTWARE_DB_FILE)
+
+
+def db_info():
+    """当前生效识别库的指纹信息。写进快照，并在报告里显示。"""
+    return {
+        "id": SOFTWARE_DB_ID,
+        "count": SOFTWARE_DB_COUNT,
+        "matcher": MATCHER_VERSION,
+        "source": SOFTWARE_DB_SOURCE,
+    }
+
+
+def archive_db(data_dir=None):
+    """按指纹把当前识别库另存一份到 data/dbs/，供以后回溯「当时是哪份库」。
+
+    同指纹已存在则跳过；任何异常都静默（追溯功能不能影响主流程）。
+    返回存档路径，未存档返回 None。
+    """
+    if not _db or not SOFTWARE_DB_ID:
+        return None
+    try:
+        d = os.path.join(data_dir or DATA_DIR, "dbs")
+        os.makedirs(d, exist_ok=True)
+        path = os.path.join(d, "db_%s.json" % SOFTWARE_DB_ID)
+        if os.path.exists(path):
+            return path
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(_db, f, ensure_ascii=False, sort_keys=True, indent=2)
+        return path
+    except OSError:
+        return None
+
+
 def _is_word_hit(key, path_lower, path_orig):
     """key 是否以「词」的形式出现在路径里。
 
@@ -122,19 +195,59 @@ def _is_word_hit(key, path_lower, path_orig):
         start = i + 1
 
 
-def identify(path):
-    """根据文件夹路径识别所属软件/公司。参数传原始大小写，内部统一转小写匹配。
+def _match(path):
+    """内部：返回 (命中的库条目, 命中的键)，未命中返回 (None, None)。
 
-    返回 {"name", "company", "tip", ...} 或 None。匹配越长的键越优先。
+    命中规则：所有「以词出现」的键里取最长的那条（越具体越优先）。
     """
     path_lower = path.lower()
     best = None
+    best_key = None
     best_len = 0
     for key, info in SOFTWARE_DB.items():
         if _is_word_hit(key, path_lower, path) and len(key) > best_len:
             best_len = len(key)
             best = info
-    return best
+            best_key = key
+    return best, best_key
+
+
+def identify(path):
+    """根据文件夹路径识别所属软件/公司。参数传原始大小写，内部统一转小写匹配。
+
+    返回 {"name", "company", "tip", ...} 或 None。匹配越长的键越优先。
+    """
+    return _match(path)[0]
+
+
+def match_key(path):
+    """返回路径命中的识别库键名（未命中返回 None）。
+
+    报告页要「按当前库重新解释历史快照」，但网页端跑不了 Python 的匹配逻辑，
+    所以在生成报告时用这个函数把「路径 → 键」算好内嵌进去，网页只做查表。
+    """
+    return _match(path)[1]
+
+
+def resolve(path):
+    """把一条路径解析成报告要显示的四元组；未识别时各字段为空。
+
+    返回 {"key", "name", "name_en", "company", "tip", "tip_en", "level"}。
+    """
+    info, key = _match(path)
+    if not info:
+        return {"key": None, "name": "", "name_en": "", "company": "",
+                "tip": "", "tip_en": "", "level": "unknown"}
+    name = info.get("name", "")
+    return {
+        "key": key,
+        "name": name,
+        "name_en": info.get("name_en", ""),
+        "company": info.get("company", ""),
+        "tip": info.get("tip", ""),
+        "tip_en": info.get("tip_en", ""),
+        "level": deletion_level(name),
+    }
 
 
 def deletion_level(software_name):
