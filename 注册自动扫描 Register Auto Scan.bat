@@ -1,19 +1,19 @@
 @echo off
 title Register Auto Scan
 chcp 936 >nul
-rem ONLOGON è§¦å‘å™¨å¿…é¡»æå‡æƒé™æ‰èƒ½åˆ›å»ºï¼Œæ™®é€šæƒé™ä¼šæŠ¥ã€Œé”™è¯¯: æ‹’ç»è®¿é—®ã€ã€‚
-rem å…ˆè‡ªæ£€ï¼Œæ²¡æå‡å°±ç”¨ UAC é‡æ–°æ‹‰èµ·è‡ªå·±ï¼Œç‚¹ä¸€ä¸‹ã€Œæ˜¯ã€å³å¯ã€‚
+rem ONLOGON ´¥·¢Æ÷±ØÐëÌáÉýÈ¨ÏÞ²ÅÄÜ´´½¨£¬ÆÕÍ¨È¨ÏÞ»á±¨¡¸´íÎó: ¾Ü¾ø·ÃÎÊ¡¹¡£
+rem ÏÈ×Ô¼ì£¬Ã»ÌáÉý¾ÍÓÃ UAC ÖØÐÂÀ­Æð×Ô¼º£¬µãÒ»ÏÂ¡¸ÊÇ¡¹¼´¿É¡£
 net session >nul 2>&1
 if not "%errorlevel%"=="0" (
     echo Requesting administrator rights. Please click "Yes" in the UAC dialog.
-    echo æ­£åœ¨è¯·æ±‚ç®¡ç†å‘˜æƒé™ï¼Œè¯·åœ¨å¼¹çª—é‡Œç‚¹ã€Œæ˜¯ã€ã€‚
+    echo ÕýÔÚÇëÇó¹ÜÀíÔ±È¨ÏÞ£¬ÇëÔÚµ¯´°Àïµã¡¸ÊÇ¡¹¡£
     powershell -NoProfile -ExecutionPolicy Bypass -Command "Start-Process -FilePath '%~f0' -Verb RunAs"
     exit /b
 )
 echo Registering Windows scheduled task (scan after every logon)...
-echo æ­£åœ¨æ³¨å†Œ Windows è®¡åˆ’ä»»åŠ¡ï¼ˆæ¯æ¬¡ç™»å½•åŽè‡ªåŠ¨æ‰«æï¼‰...
+echo ÕýÔÚ×¢²á Windows ¼Æ»®ÈÎÎñ£¨Ã¿´ÎµÇÂ¼ºó×Ô¶¯É¨Ãè£©...
 echo It skips the run if the last scan was less than 6 hours ago.
-echo è·ä¸Šæ¬¡æ‰«æä¸è¶³ 6 å°æ—¶ä¼šè‡ªåŠ¨è·³è¿‡ï¼Œæ‰€ä»¥ä¸€å¤©æœ€å¤šè®°ä¸€ä»½ã€‚
+echo ¾àÉÏ´ÎÉ¨Ãè²»×ã 6 Ð¡Ê±»á×Ô¶¯Ìø¹ý£¬ËùÒÔÒ»Ìì×î¶à¼ÇÒ»·Ý¡£
 echo.
 where python >nul 2>nul
 if %errorlevel%==0 (

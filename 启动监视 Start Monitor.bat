@@ -1,11 +1,12 @@
 @echo off
 title C Drive Monitor
+chcp 936 >nul
 echo ============================================
-echo   C Drive Monitor - Cç›˜ç©ºé—´ç›‘è§†å™¨
+echo   C Drive Monitor - CÅÌ¿Õ¼ä¼àÊÓÆ÷
 echo   Keep this window open. It records once a day.
-echo   ä¿æŒæ­¤çª—å£å¼€å¯ã€‚å®ƒä¼šæ¯å¤©è®°å½•ä¸€æ¬¡ã€‚
+echo   ±£³Ö´Ë´°¿Ú¿ªÆô¡£Ëü»áÃ¿Ìì¼ÇÂ¼Ò»´Î¡£
 echo   Close this window to stop monitoring.
-echo   å…³é—­æ­¤çª—å£å³åœæ­¢ç›‘è§†ã€‚
+echo   ¹Ø±Õ´Ë´°¿Ú¼´Í£Ö¹¼àÊÓ¡£
 echo ============================================
 echo.
 where python >nul 2>nul

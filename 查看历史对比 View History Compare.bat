@@ -1,7 +1,8 @@
 @echo off
 title View History Compare
+chcp 936 >nul
 echo Opening report (with history compare, no scan)...
-echo æ­£åœ¨æ‰“å¼€æŠ¥å‘Šï¼ˆå«å†å²å¯¹æ¯”ï¼Œä¸é‡æ–°æ‰«æï¼‰...
+echo ÕıÔÚ´ò¿ª±¨¸æ£¨º¬ÀúÊ·¶Ô±È£¬²»ÖØĞÂÉ¨Ãè£©...
 echo.
 where python >nul 2>nul
 if %errorlevel%==0 (
@@ -11,5 +12,5 @@ if %errorlevel%==0 (
 )
 echo.
 echo Done. If the page did not open, run it again.
-echo å®Œæˆã€‚è‹¥é¡µé¢æœªæ‰“å¼€ï¼Œè¯·å†è¿è¡Œä¸€æ¬¡ã€‚
+echo Íê³É¡£ÈôÒ³ÃæÎ´´ò¿ª£¬ÇëÔÙÔËĞĞÒ»´Î¡£
 pause

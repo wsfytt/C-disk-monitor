@@ -1,9 +1,10 @@
 @echo off
 title Scan C Drive
+chcp 936 >nul
 echo Scanning C drive... (about 30 seconds)
-echo æ­£åœ¨æ‰«æ C ç›˜...ï¼ˆçº¦ 30 ç§’ï¼‰
+echo ÕıÔÚÉ¨Ãè C ÅÌ...£¨Ô¼ 30 Ãë£©
 echo The report will open automatically when done.
-echo å®ŒæˆåæŠ¥å‘Šä¼šè‡ªåŠ¨æ‰“å¼€ã€‚
+echo Íê³Éºó±¨¸æ»á×Ô¶¯´ò¿ª¡£
 echo.
 where python >nul 2>nul
 if %errorlevel%==0 (
@@ -13,5 +14,5 @@ if %errorlevel%==0 (
 )
 echo.
 echo Done. Report opened in browser (if not, check the reports folder).
-echo å®Œæˆã€‚æŠ¥å‘Šå·²åœ¨æµè§ˆå™¨æ‰“å¼€ï¼ˆè‹¥æ²¡æœ‰ï¼Œè¯·æŸ¥çœ‹ reports æ–‡ä»¶å¤¹ï¼‰ã€‚
+echo Íê³É¡£±¨¸æÒÑÔÚä¯ÀÀÆ÷´ò¿ª£¨ÈôÃ»ÓĞ£¬Çë²é¿´ reports ÎÄ¼ş¼Ğ£©¡£
 pause
