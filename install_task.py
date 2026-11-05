@@ -57,10 +57,22 @@ def run(cmd):
     return r.returncode, out
 
 
+_TASK_MISSING_HINTS = ("找不到", "不存在", "cannot find", "does not exist", "no such file")
+
+
+def _task_missing(out):
+    low = out.lower()
+    return any(h in low for h in _TASK_MISSING_HINTS)
+
+
 def install():
-    # 先把旧方案留下的任务删掉（不存在会失败，忽略即可）
+    # 先把旧方案留下的任务删掉。删不掉（权限不足等）要明确说出来：
+    # 旧 DAILY 任务和新任务同时存在时，一天会被扫好几次，比注册失败更难发现。
+    stale = []
     for old in LEGACY_TASK_NAMES:
-        run(["schtasks", "/Delete", "/TN", old, "/F"])
+        code, out = run(["schtasks", "/Delete", "/TN", old, "/F"])
+        if code != 0 and not _task_missing(out):
+            stale.append(old)
 
     # 登录时触发，登录后延迟 1 分钟再跑，避开开机高峰
     code, out = run([
@@ -91,6 +103,15 @@ def install():
         print("  Right-click the .bat and choose \"Run as administrator\", or click Yes on the UAC prompt.")
         print("  也可以不用计划任务，直接双击「启动监视」让程序常驻后台。")
         print("  Or skip the task and run the monitor window instead.")
+
+    if stale:
+        print("")
+        print("[!] 旧任务没能删掉 / Could not remove the old task(s): %s" % ", ".join(stale))
+        print("    它若和新任务同时存在，一天可能被扫好几次。")
+        print("    If it stays, it will trigger alongside the new one and scan several times a day.")
+        print("    解决：以管理员身份打开命令行，执行 / Fix: run as admin in cmd:")
+        for old in stale:
+            print("      schtasks /Delete /TN \"%s\" /F" % old)
     return code
 
 
