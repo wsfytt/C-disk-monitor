@@ -85,8 +85,10 @@ def install():
         print("✗ 注册失败，返回信息 / Registration failed:")
         print(out)
         print("")
-        print("  多数情况无需管理员；如提示权限不足，请右键「以管理员身份运行」本脚本。")
-        print("  If it reports permission denied, right-click and run as administrator.")
+        print("  「登录时触发」的任务，Windows 只允许管理员身份创建——这一步必须提升权限。")
+        print("  A logon-trigger task can only be created elevated, so this step needs admin rights.")
+        print("  请右键「注册自动扫描」并选择「以管理员身份运行」，或在 UAC 弹窗里点「是」。")
+        print("  Right-click the .bat and choose \"Run as administrator\", or click Yes on the UAC prompt.")
         print("  也可以不用计划任务，直接双击「启动监视」让程序常驻后台。")
         print("  Or skip the task and run the monitor window instead.")
     return code

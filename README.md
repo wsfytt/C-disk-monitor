@@ -17,8 +17,8 @@ A pure-Python Windows tool: periodically scans the C drive, finds out "which sof
   Each folder in the report shows: full path, what it is, before/now size, change, and a deletion level (✅ safe to delete / 🟡 consider cleaning / 🔴 caution)
 - 支持查看任意两次历史扫描之间的对比（交互式网页）
   Compare any two historical scans (interactive web page)
-- 可注册 Windows 计划任务，每次登录后自动扫描一次（距上次不足 6 小时会跳过）
-  Can register a Windows scheduled task to scan after each logon (skipped if the last scan was under 6 h ago)
+- 可注册 Windows 计划任务，每次登录后自动扫描一次（距上次不足 6 小时会跳过；注册这一步需要管理员权限）
+  Can register a Windows scheduled task to scan after each logon (skipped if the last scan was under 6 h ago; registering it requires admin rights)
 - 中英双语：网页报告带「中文 / English」切换按钮（默认中文）；命令行和 .txt 报告可用 `config.py` 的 `LANG` 开关切换
   Bilingual: the web report has a "中文 / English" toggle (Chinese by default); CLI and .txt reports use the `LANG` switch in `config.py`
 
