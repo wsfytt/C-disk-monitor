@@ -27,6 +27,30 @@ def T(k):
     return i18n.t(k, config.LANG)
 
 
+def arg_value(flag):
+    """读 `--flag 值` 形式参数的值；没这个参数返回 None。"""
+    if flag in sys.argv:
+        i = sys.argv.index(flag)
+        if i + 1 < len(sys.argv):
+            return sys.argv[i + 1]
+    return None
+
+
+def auto_scan_gap_seconds():
+    """计划任务传入 --min-gap <小时> 时才返回间隔秒数；手动运行返回 None（不节流）。"""
+    raw = arg_value("--min-gap")
+    if raw is None:
+        return None
+    try:
+        hours = float(raw)
+    except ValueError:
+        return config.AUTO_MIN_GAP_SECONDS
+    if hours <= 0:
+        return None
+    return hours * 3600
+
+
+
 def do_scan():
     """执行一次扫描并保存快照，打印结果（同时写日志）。"""
     log().info(T("start_scan"))
@@ -161,6 +185,17 @@ def main():
     log().info("%s: %s" % (T("report_dir"), config.REPORT_DIR))
 
     if once:
+        # 只有计划任务会带 --min-gap：登录触发可能一天好几次，距上次不足间隔就跳过。
+        # 手动双击 bat 不带这个参数，永远立刻扫。
+        gap = auto_scan_gap_seconds()
+        if gap:
+            age = scanner.latest_snapshot_age_seconds()
+            if age is not None and age < gap:
+                log().info(("距上次扫描才 %.1f 小时（自动扫描要求间隔 ≥ %.0f 小时），本次跳过。"
+                            if config.LANG == "zh" else
+                            "Only %.1f h since last scan (auto-scan needs >= %.0f h), skipped.") % (
+                    age / 3600.0, gap / 3600.0))
+                return
         do_scan()
         maybe_report(auto_open=auto_open)
         log().info(T("once_done"))

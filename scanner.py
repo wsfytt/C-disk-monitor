@@ -341,6 +341,32 @@ def latest_snapshot():
     return snaps[-1] if snaps else None
 
 
+def latest_snapshot_age_seconds(now=None):
+    """距最近一份快照的秒数；一份都没有（或文件名无法解析）时返回 None。
+
+    直接读文件名里的时间戳，不解析 JSON——计划任务判断「要不要跳过本次扫描」时，
+    不该为了看一眼时间就把所有快照全读一遍。
+    """
+    latest = None
+    try:
+        for fn in os.listdir(config.DATA_DIR):
+            if fn.startswith("snapshot_") and fn.endswith(".json"):
+                if latest is None or fn > latest:
+                    latest = fn
+    except OSError:
+        return None
+    if not latest:
+        return None
+    stamp = latest[len("snapshot_"):-len(".json")]
+    try:
+        made = datetime.datetime.strptime(stamp, "%Y%m%d_%H%M%S")
+    except ValueError:
+        return None
+    now = now or datetime.datetime.now()
+    return max(0.0, (now - made).total_seconds())
+
+
+
 if __name__ == "__main__":
     print("开始深度扫描 C 盘（通常 15~60 秒，请耐心等待）...")
     t0 = time.time()

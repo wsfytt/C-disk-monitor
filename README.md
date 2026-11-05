@@ -17,8 +17,8 @@ A pure-Python Windows tool: periodically scans the C drive, finds out "which sof
   Each folder in the report shows: full path, what it is, before/now size, change, and a deletion level (✅ safe to delete / 🟡 consider cleaning / 🔴 caution)
 - 支持查看任意两次历史扫描之间的对比（交互式网页）
   Compare any two historical scans (interactive web page)
-- 可注册 Windows 计划任务，每天自动扫描一次
-  Can register a Windows scheduled task to scan once a day
+- 可注册 Windows 计划任务，每次登录后自动扫描一次（距上次不足 6 小时会跳过）
+  Can register a Windows scheduled task to scan after each logon (skipped if the last scan was under 6 h ago)
 - 中英双语：网页报告带「中文 / English」切换按钮（默认中文）；命令行和 .txt 报告可用 `config.py` 的 `LANG` 开关切换
   Bilingual: the web report has a "中文 / English" toggle (Chinese by default); CLI and .txt reports use the `LANG` switch in `config.py`
 
@@ -80,9 +80,9 @@ python monitor.py --once --open
 python monitor.py
 ```
 
-Windows 用户也可以直接双击项目目录里的 `立即扫描一次 Scan Now.bat` / `启动监视 Start Monitor.bat` / `注册每日自动扫描 Register Daily Scan.bat`。
+Windows 用户也可以直接双击项目目录里的 `立即扫描一次 Scan Now.bat` / `启动监视 Start Monitor.bat` / `注册自动扫描 Register Auto Scan.bat`。
 
-Windows users can also double-click `立即扫描一次 Scan Now.bat` / `启动监视 Start Monitor.bat` / `注册每日自动扫描 Register Daily Scan.bat` in the project folder.
+Windows users can also double-click `立即扫描一次 Scan Now.bat` / `启动监视 Start Monitor.bat` / `注册自动扫描 Register Auto Scan.bat` in the project folder.
 
 ## 命令一览 · Commands
 
@@ -96,7 +96,7 @@ python compare.py --all              # 生成所有相邻快照的对比 / diff 
 python compare.py --last             # 对比最新两次 / diff the latest two
 python monitor.py --report           # 不扫描，直接打开带「历史对比」标签的报告页 / open the report with a "History Compare" tab, no scan
 python overview.py                   # 生成「当前占用盘点」报告 / generate a "current usage" report
-python install_task.py               # 注册「每天自动扫描」计划任务 / register the daily-scan task
+python install_task.py               # 注册「登录后自动扫描」计划任务 / register the scan-after-logon task
 python install_task.py --uninstall   # 取消计划任务 / remove the scheduled task
 python monitor.py --install-task     # 同上（打包成 exe 后用它注册）/ same, for the exe build
 python monitor.py --uninstall-task   # 同上（取消）/ same, to remove

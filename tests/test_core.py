@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 import config
 import reporter
+import scanner
 from scanner import human_size
 
 MB = 1024 * 1024
@@ -235,6 +236,41 @@ class TestDbFingerprint(unittest.TestCase):
             files = os.listdir(os.path.join(d, "dbs"))
             self.assertEqual(len(files), 1)
             self.assertIn(config.SOFTWARE_DB_ID, files[0])
+
+
+class TestSnapshotAge(unittest.TestCase):
+    """计划任务节流靠它判断「距上次扫描多久」，看错会一天扫好几次或干脆不扫。"""
+
+    def _use_data_dir(self, d):
+        old = config.DATA_DIR
+        config.DATA_DIR = d
+        self.addCleanup(lambda: setattr(config, "DATA_DIR", old))
+
+    def test_none_when_no_snapshot(self):
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self._use_data_dir(d)
+            self.assertIsNone(scanner.latest_snapshot_age_seconds())
+
+    def test_uses_newest_file(self):
+        import os
+        import tempfile
+        import datetime
+        with tempfile.TemporaryDirectory() as d:
+            self._use_data_dir(d)
+            for hours in (10, 2):
+                ts = (datetime.datetime.now() - datetime.timedelta(hours=hours)).strftime("%Y%m%d_%H%M%S")
+                open(os.path.join(d, "snapshot_%s.json" % ts), "w").close()
+            age = scanner.latest_snapshot_age_seconds()
+            self.assertAlmostEqual(age / 3600.0, 2.0, delta=0.1)
+
+    def test_unparsable_name_returns_none(self):
+        import os
+        import tempfile
+        with tempfile.TemporaryDirectory() as d:
+            self._use_data_dir(d)
+            open(os.path.join(d, "snapshot_notatime.json"), "w").close()
+            self.assertIsNone(scanner.latest_snapshot_age_seconds())
 
 
 if __name__ == "__main__":
