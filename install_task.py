@@ -17,9 +17,11 @@ PYTHON = sys.executable
 MONITOR = os.path.join(BASE_DIR, "monitor.py")
 
 TASK_NAME = "CDiskMonitor-AutoScan"
-# 老版本注册的是 DAILY 触发、任务名不同。换方案后必须把旧的清掉，
-# 否则新旧两个任务同时存在，一天会被扫好几次。
-LEGACY_TASK_NAMES = ["CDiskMonitor-DailyScan"]
+# 历史上用过的任务名，注册 / 取消时都要顺手清掉：
+#   CDiskMonitor-DailyScan —— 英文名、每天 12:00
+#   C盘空间监视器-每日扫描   —— 最早的版本用的是中文名，同样是每天 12:00
+# 新旧任务同时存在时，一天会被扫好几次，且很难察觉。
+LEGACY_TASK_NAMES = ["CDiskMonitor-DailyScan", "C盘空间监视器-每日扫描"]
 
 # 最小间隔（小时）：一天开关机好几次时，距上次快照不足这么久就跳过本次。
 # 只对自动扫描生效，手动双击 bat 不受影响。
